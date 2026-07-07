@@ -199,9 +199,9 @@ let editIdx=-1;
 let newDates=[];
 let editDates=[];
 
+const _td=new Date();const TODAY=`${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
 const START=new Date('2026-07-06T00:00:00');
 const END=new Date('2026-09-30T00:00:00');
-const TODAY='2026-07-06';
 
 function allDates(){let d=[],c=new Date(START);while(c<=END){d.push(new Date(c));c.setDate(c.getDate()+1);}return d;}
 function fmt(d){if(!(d instanceof Date))return d;const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
@@ -327,19 +327,23 @@ function resetToDefault(){if(!confirm('Reset all tasks to default?'))return;task
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 document.getElementById('gantt-wrap').addEventListener('mouseover',function(e){
   const td=e.target.closest('td.t-day');
-  if(!td||!td.querySelector('.dot'))return;
+  if(!td)return;
   const row=td.parentNode;
   const colIdx=Array.from(row.cells).indexOf(td);
   const table=td.closest('table');
   clearHover(table);
-  td.classList.add('dot-hover');
+  table.querySelectorAll('tr').forEach(r=>{
+    const cell=r.cells[colIdx];
+    if(cell)cell.classList.add('dot-hover');
+  });
   const headerCells=table.querySelectorAll('thead tr:last-child th');
   if(headerCells[colIdx-2])headerCells[colIdx-2].classList.add('col-hover');
 });
 document.getElementById('gantt-wrap').addEventListener('mouseout',function(e){
   const td=e.target.closest('td.t-day');
   if(!td)return;
-  clearHover(td.closest('table'));
+  const related=e.relatedTarget?e.relatedTarget.closest('td.t-day'):null;
+  if(!related)clearHover(td.closest('table'));
 });
 function clearHover(table){
   table.querySelectorAll('.dot-hover').forEach(el=>el.classList.remove('dot-hover'));
