@@ -29,8 +29,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;fo
 .date-tag span:hover{opacity:1}
 .date-add-row{display:flex;gap:6px;align-items:center}
 .date-add-row input[type=date]{width:138px}
-.btn-date-add{background:#e8e8f0;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;color:#555}
-.btn-date-add:hover{background:#d0d0e0}
+.mini-cal-wrap{border:1.5px solid #e8e8f0;border-radius:10px;padding:8px;background:#fafafa;width:224px}
+.mini-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mini-cal-nav button{background:none;border:none;cursor:pointer;font-size:16px;color:#666;padding:2px 6px;border-radius:4px}
+.mini-cal-nav button:hover{background:#e8e8f0}
+.mini-cal-nav span{font-size:11px;font-weight:700;color:#1a1a2e}
+.mini-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow{font-size:9px;font-weight:700;color:#aaa;text-align:center;padding:2px 0}
+.cal-day{font-size:11px;text-align:center;padding:4px 2px;border-radius:4px;cursor:pointer;color:#333;transition:background .1s}
+.cal-day:hover{background:#e8e8f0}
+.cal-day.selected{background:#6c63ff;color:#fff;font-weight:700}
+.cal-day.today{border:1.5px solid #6c63ff;color:#6c63ff}
+.cal-day.today.selected{border-color:transparent}
+.cal-day.weekend{color:#ccc}
+.cal-day.empty{cursor:default}
+.cal-day.empty:hover{background:none}
+.btn-clear-dates{background:none;border:none;font-size:10px;color:#aaa;cursor:pointer;margin-top:4px;padding:0}
+.btn-clear-dates:hover{color:#e74c3c}
 .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 .filter-btn{border:1.5px solid #e8e8f0;background:#fff;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:#666;cursor:pointer}
 .filter-btn.active{background:#6c63ff;border-color:#6c63ff;color:#fff}
@@ -101,12 +116,16 @@ td.t-del{text-align:center;background:#fff;padding:4px}
     </select>
   </div>
   <div class="field-group dates-input">
-    <div class="field-label">Dates</div>
-    <div class="dates-tags" id="inp-dates-tags"></div>
-    <div class="date-add-row">
-      <input type="date" id="inp-date-picker"/>
-      <button class="btn-date-add" onclick="addDateTag()">+ Date</button>
+    <div class="field-label">Dates <span id="inp-dates-count" style="color:#6c63ff;font-weight:700"></span></div>
+    <div class="mini-cal-wrap">
+      <div class="mini-cal-nav">
+        <button onclick="calNav('inp',-1)">&#8249;</button>
+        <span id="inp-cal-label"></span>
+        <button onclick="calNav('inp',1)">&#8250;</button>
+      </div>
+      <div class="mini-cal-grid" id="inp-cal-grid"></div>
     </div>
+    <div class="dates-tags" id="inp-dates-tags" style="margin-top:6px;max-width:280px"></div>
   </div>
   <div class="field-group"><div class="field-label">&nbsp;</div><button class="btn-add" onclick="addTask()">+ Add task</button></div>
 </div>
@@ -136,12 +155,16 @@ td.t-del{text-align:center;background:#fff;padding:4px}
       <select id="ed-cat" onchange="handleCatChange('ed-cat')"></select>
     </div>
     <div class="field-group dates-input">
-      <div class="field-label">Dates</div>
-      <div class="dates-tags" id="ed-dates-tags"></div>
-      <div class="date-add-row">
-        <input type="date" id="ed-date-picker"/>
-        <button class="btn-date-add" onclick="addEditDateTag()">+ Date</button>
+      <div class="field-label">Dates <span id="ed-dates-count" style="color:#6c63ff;font-weight:700"></span></div>
+      <div class="mini-cal-wrap">
+        <div class="mini-cal-nav">
+          <button onclick="calNav('ed',-1)">&#8249;</button>
+          <span id="ed-cal-label"></span>
+          <button onclick="calNav('ed',1)">&#8250;</button>
+        </div>
+        <div class="mini-cal-grid" id="ed-cal-grid"></div>
       </div>
+      <div class="dates-tags" id="ed-dates-tags" style="margin-top:6px"></div>
     </div>
     <div class="modal-btns">
       <button class="btn-save" onclick="saveEdit()">Save</button>
@@ -280,33 +303,63 @@ function save(){
 function setStatus(m){document.getElementById('status').textContent=m;}
 function setFilter(mode,btn){filterMode=mode;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
 
-// New task date tags
-function renderNewTags(){
-  const el=document.getElementById('inp-dates-tags');
-  el.innerHTML=newDates.sort().map((d,i)=>`<div class="date-tag">${d}<span onclick="removeNewDate(${i})">✕</span></div>`).join('');
-}
-function addDateTag(){
-  const v=document.getElementById('inp-date-picker').value;
-  if(!v){alert('Pick a date.');return;}
-  if(newDates.includes(v)){alert('Already added.');return;}
-  newDates.push(v);renderNewTags();
-  document.getElementById('inp-date-picker').value='';
-}
-function removeNewDate(i){newDates.splice(i,1);renderNewTags();}
+// ── Inline multi-select calendar ──────────────────────────
+const calState={inp:{year:2026,month:6},ed:{year:2026,month:6}};// month is 0-indexed
+const DOWS=['S','S','M','T','W','T','F'];
 
-// Edit task date tags
-function renderEditTags(){
-  const el=document.getElementById('ed-dates-tags');
-  el.innerHTML=editDates.sort().map((d,i)=>`<div class="date-tag">${d}<span onclick="removeEditDate(${i})">✕</span></div>`).join('');
+function fmtCal(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+
+function renderCal(ns){
+  const {year,month}=calState[ns];
+  const dates=ns==='inp'?newDates:editDates;
+  const label=new Date(year,month,1).toLocaleString('default',{month:'long',year:'numeric'});
+  document.getElementById(`${ns}-cal-label`).textContent=label;
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  let html=DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<firstDay;i++)html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const fd=fmtCal(year,month,d);
+    const sel=dates.includes(fd);
+    const tod=fd===TODAY;
+    const dow=new Date(year,month,d).getDay();
+    const wk=dow===5||dow===6;
+    html+=`<div class="cal-day${sel?' selected':''}${tod&&!sel?' today':''}${wk&&!sel?' weekend':''}" onclick="toggleCalDate('${ns}','${fd}')">${d}</div>`;
+  }
+  document.getElementById(`${ns}-cal-grid`).innerHTML=html;
+  renderCalTags(ns);
 }
-function addEditDateTag(){
-  const v=document.getElementById('ed-date-picker').value;
-  if(!v){alert('Pick a date.');return;}
-  if(editDates.includes(v)){alert('Already added.');return;}
-  editDates.push(v);renderEditTags();
-  document.getElementById('ed-date-picker').value='';
+
+function calNav(ns,dir){
+  calState[ns].month+=dir;
+  if(calState[ns].month>11){calState[ns].month=0;calState[ns].year++;}
+  if(calState[ns].month<0){calState[ns].month=11;calState[ns].year--;}
+  renderCal(ns);
 }
-function removeEditDate(i){editDates.splice(i,1);renderEditTags();}
+
+function toggleCalDate(ns,fd){
+  const arr=ns==='inp'?newDates:editDates;
+  const i=arr.indexOf(fd);
+  if(i>=0)arr.splice(i,1);else arr.push(fd);
+  renderCal(ns);
+}
+
+function renderCalTags(ns){
+  const arr=ns==='inp'?newDates:editDates;
+  const el=document.getElementById(`${ns}-dates-tags`);
+  const countEl=document.getElementById(`${ns}-dates-count`);
+  if(countEl)countEl.textContent=arr.length?`(${arr.length} selected)`:'';
+  if(!el)return;
+  el.innerHTML=arr.sort().map((d,i)=>`<div class="date-tag">${d}<span onclick="toggleCalDate('${ns === 'inp' ? 'inp' : 'ed'}','${d}')">✕</span></div>`).join('');
+}
+
+function initCals(){
+  const now=new Date();
+  calState.inp={year:2026,month:6};
+  calState.ed={year:2026,month:6};
+  newDates=[];editDates=[];
+  renderCal('inp');
+}
 
 function render(){
   const allD=allDates();
@@ -393,11 +446,12 @@ function addTask(){
   const owner=document.getElementById('inp-owner').value;
   const cat=document.getElementById('inp-cat').value;
   if(!task){alert('Fill in Activity name.');return;}
-  if(!newDates.length){alert('Add at least one date.');return;}
+  if(!newDates.length){alert('Select at least one date on the calendar.');return;}
   tasks.push({cat,task,owner,dates:[...newDates]});
   document.getElementById('inp-task').value='';
   document.getElementById('inp-owner').value='';
-  newDates=[];renderNewTags();
+  newDates=[];
+  renderCal('inp');
   save();render();
 }
 function delTask(idx){if(!confirm('Delete "'+tasks[idx].task+'"?'))return;tasks.splice(idx,1);save();render();}
@@ -407,12 +461,18 @@ function openEdit(idx){
   populateSelects();
   document.getElementById('ed-owner').value=t.owner||'';
   document.getElementById('ed-cat').value=t.cat;
-  editDates=[...(t.dates||[])];renderEditTags();
+  editDates=[...(t.dates||[])];
+  if(editDates.length){
+    const first=editDates[0];
+    calState.ed.year=parseInt(first.split('-')[0]);
+    calState.ed.month=parseInt(first.split('-')[1])-1;
+  }
+  renderCal('ed');
   document.getElementById('modal').classList.add('open');
 }
 function closeModal(){document.getElementById('modal').classList.remove('open');editIdx=-1;editDates=[];}
 function saveEdit(){
-  if(!editDates.length){alert('Add at least one date.');return;}
+  if(!editDates.length){alert('Select at least one date.');return;}
   tasks[editIdx]={task:document.getElementById('ed-task').value.trim(),owner:document.getElementById('ed-owner').value,cat:document.getElementById('ed-cat').value,dates:[...editDates]};
   closeModal();save();render();
 }
@@ -445,6 +505,7 @@ function clearHover(table){
 function load(){
   try{const d=localStorage.getItem(STORAGE_KEY);if(d)tasks=JSON.parse(d);}catch(e){}
   loadMeta();
+  initCals();
   render();
 }
 load();
