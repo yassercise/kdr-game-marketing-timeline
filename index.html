@@ -266,7 +266,7 @@ function render(){
   let html='<table><thead><tr><th class="h-act" rowspan="2">Activity</th><th class="h-own" rowspan="2">Owner</th>';
   Object.values(months).forEach(m=>{html+=`<th class="h-month" colspan="${m.count}">${m.label}</th>`;});
   html+='<th class="h-del" rowspan="2"></th></tr><tr>';
-  dates.forEach(d=>{const wk=d.getDay()===0||d.getDay()===6,tod=fmt(d)===TODAY;html+=`<th class="h-day${wk?' weekend':''}${tod?' today-h':''}">${d.getDate()}</th>`;});
+  dates.forEach(d=>{const wk=d.getDay()===5||d.getDay()===6,tod=fmt(d)===TODAY;html+=`<th class="h-day${wk?' weekend':''}${tod?' today-h':''}">${d.getDate()}</th>`;});
   html+='</tr></thead><tbody>';
 
   CAT_ORDER.forEach(cat=>{
@@ -281,7 +281,7 @@ function render(){
       const rb=even?'#fff':'#fcfcfe';
       html+=`<tr class="task-row"><td class="t-act" style="background:${rb}" onclick="openEdit(${idx})" title="Click to edit">✏ ${t.task}</td><td class="t-own" style="background:${rb}">${t.owner||''}</td>`;
       dates.forEach(d=>{
-        const wk=d.getDay()===0||d.getDay()===6,fd=fmt(d),inR=taskDates.has(fd),tod=fd===TODAY;
+        const wk=d.getDay()===5||d.getDay()===6,fd=fmt(d),inR=taskDates.has(fd),tod=fd===TODAY;
         let cell='';
         if(inR){cell=`<span class="dot" style="background:#${col};opacity:.9"></span>`;}
         html+=`<td class="t-day${wk&&!inR?' weekend':''}${tod?' today-d':''}" style="${wk&&!inR?'background:#fafafa':''}">${cell}</td>`;
