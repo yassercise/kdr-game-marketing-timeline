@@ -16,34 +16,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;fo
 .controls input,.controls select{border:1.5px solid #e8e8f0;border-radius:8px;padding:6px 10px;font-size:12px;color:#1a1a2e;background:#fafafa;outline:none;transition:border .15s}
 .controls input:focus,.controls select:focus{border-color:#6c63ff}
 .controls input[type=text]{width:200px}
-.controls input[type=date]{width:138px}
 .controls select{width:190px}
 .btn-add{background:#6c63ff;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer}
 .btn-add:hover{background:#5a52d5}
+.dates-input{display:flex;flex-direction:column;gap:3px}
+.dates-tags{display:flex;flex-wrap:wrap;gap:4px;min-width:200px;max-width:300px;border:1.5px solid #e8e8f0;border-radius:8px;padding:4px 8px;background:#fafafa;min-height:34px;align-items:center}
+.date-tag{background:#6c63ff;color:#fff;border-radius:6px;padding:2px 7px;font-size:11px;display:flex;align-items:center;gap:4px}
+.date-tag span{cursor:pointer;opacity:.7}
+.date-tag span:hover{opacity:1}
+.date-add-row{display:flex;gap:6px;align-items:center}
+.date-add-row input[type=date]{width:138px}
+.btn-date-add{background:#e8e8f0;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;color:#555}
+.btn-date-add:hover{background:#d0d0e0}
 .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 .filter-btn{border:1.5px solid #e8e8f0;background:#fff;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:#666;cursor:pointer}
 .filter-btn.active{background:#6c63ff;border-color:#6c63ff;color:#fff}
 .btn-reset{border:1.5px solid #e8e8f0;background:#fff;border-radius:8px;padding:5px 12px;font-size:11px;color:#888;cursor:pointer;margin-left:auto}
 .gantt-card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden}
-.gantt-wrap{overflow-x:auto}
+.gantt-wrap{overflow:auto;max-height:70vh}
 table{border-collapse:collapse;width:100%}
+thead{position:sticky;top:0;z-index:10}
 .h-month{background:#f0f1f8;font-size:10px;font-weight:700;color:#555;text-align:center;padding:5px 4px;border-bottom:1px solid #e8e8f0;letter-spacing:.5px}
-.h-day{font-size:10px;font-weight:600;color:#888;text-align:center;padding:5px 2px;border-bottom:2px solid #e8e8f0;min-width:26px;width:26px}
+.h-day{font-size:10px;font-weight:600;color:#888;text-align:center;padding:5px 2px;border-bottom:2px solid #e8e8f0;min-width:26px;width:26px;background:#f9f9fc}
 .h-day.weekend{color:#ccc;background:#fafafa}
 .h-day.today-h{background:#6c63ff;color:#fff;border-radius:4px}
-.h-act{text-align:left;padding:6px 14px;font-size:11px;font-weight:700;color:#555;background:#f9f9fc;border-bottom:2px solid #e8e8f0;min-width:200px;position:sticky;left:0;z-index:2}
-.h-own{text-align:center;padding:6px 8px;font-size:11px;font-weight:700;color:#555;background:#f9f9fc;border-bottom:2px solid #e8e8f0;min-width:100px}
+.h-act{text-align:left;padding:6px 14px;font-size:11px;font-weight:700;color:#555;background:#f9f9fc;border-bottom:2px solid #e8e8f0;min-width:200px;position:sticky;left:0;z-index:11}
+.h-own{text-align:center;padding:6px 8px;font-size:11px;font-weight:700;color:#555;background:#f9f9fc;border-bottom:2px solid #e8e8f0;min-width:100px;position:sticky;left:200px;z-index:11}
 .h-del{background:#f9f9fc;border-bottom:2px solid #e8e8f0;width:60px}
 .cat-row td{padding:6px 14px;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;border-top:1px solid #e8e8f0}
 .task-row td{border-bottom:1px solid #f0f0f8;padding:5px 2px}
 .task-row:hover td{background:#f9f9fc!important}
 td.t-act{padding:5px 14px;font-size:12px;color:#2d2d44;background:#fff;position:sticky;left:0;z-index:1;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
-td.t-own{text-align:center;font-size:11px;color:#999;background:#fff;padding:5px 8px;white-space:nowrap}
+td.t-own{text-align:center;font-size:11px;color:#999;background:#fff;padding:5px 8px;white-space:nowrap;position:sticky;left:200px;z-index:1}
 td.t-day{min-width:26px;width:26px;padding:3px 2px}
 td.t-day.weekend{background:#fafafa}
 td.t-day.today-d{border-left:2px solid #6c63ff}
 td.t-del{text-align:center;background:#fff;padding:4px}
-.bar{height:20px;border-radius:10px;display:block}
+.dot{width:18px;height:18px;border-radius:50%;display:block;margin:auto}
 .btn-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px}
 .btn-del:hover{color:#e74c3c;background:#fff5f5}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;padding:0 4px}
@@ -52,10 +61,10 @@ td.t-del{text-align:center;background:#fff;padding:4px}
 .status-bar{font-size:10px;color:#aaa;margin-top:8px;text-align:right}
 .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:14px;padding:24px;width:380px;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.modal{background:#fff;border-radius:14px;padding:24px;width:420px;box-shadow:0 8px 32px rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
 .modal h3{font-size:14px;font-weight:700;margin-bottom:16px;color:#1a1a2e}
 .modal .field-group{margin-bottom:12px}
-.modal input,.modal select{width:100%;border:1.5px solid #e8e8f0;border-radius:8px;padding:7px 10px;font-size:12px;color:#1a1a2e;background:#fafafa;outline:none}
+.modal input[type=text],.modal select{width:100%;border:1.5px solid #e8e8f0;border-radius:8px;padding:7px 10px;font-size:12px;color:#1a1a2e;background:#fafafa;outline:none}
 .modal input:focus,.modal select:focus{border-color:#6c63ff}
 .modal-btns{display:flex;gap:10px;margin-top:16px}
 .btn-save{flex:1;background:#6c63ff;color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer}
@@ -78,8 +87,14 @@ td.t-del{text-align:center;background:#fff;padding:4px}
       <option>Competition & Leaderboard</option><option>UGC</option><option>Email / CRM</option><option>Post-Campaign</option>
     </select>
   </div>
-  <div class="field-group"><div class="field-label">Start</div><input type="date" id="inp-start"/></div>
-  <div class="field-group"><div class="field-label">End</div><input type="date" id="inp-end"/></div>
+  <div class="field-group dates-input">
+    <div class="field-label">Dates</div>
+    <div class="dates-tags" id="inp-dates-tags"></div>
+    <div class="date-add-row">
+      <input type="date" id="inp-date-picker"/>
+      <button class="btn-date-add" onclick="addDateTag()">+ Date</button>
+    </div>
+  </div>
   <div class="field-group"><div class="field-label">&nbsp;</div><button class="btn-add" onclick="addTask()">+ Add task</button></div>
 </div>
 
@@ -109,8 +124,14 @@ td.t-del{text-align:center;background:#fff;padding:4px}
         <option>Competition & Leaderboard</option><option>UGC</option><option>Email / CRM</option><option>Post-Campaign</option>
       </select>
     </div>
-    <div class="field-group"><div class="field-label">Start</div><input type="date" id="ed-start"/></div>
-    <div class="field-group"><div class="field-label">End</div><input type="date" id="ed-end"/></div>
+    <div class="field-group dates-input">
+      <div class="field-label">Dates</div>
+      <div class="dates-tags" id="ed-dates-tags"></div>
+      <div class="date-add-row">
+        <input type="date" id="ed-date-picker"/>
+        <button class="btn-date-add" onclick="addEditDateTag()">+ Date</button>
+      </div>
+    </div>
     <div class="modal-btns">
       <button class="btn-save" onclick="saveEdit()">Save</button>
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -122,71 +143,74 @@ td.t-del{text-align:center;background:#fff;padding:4px}
 const CAT_COLORS={"Pre-Launch Content":"4A90D9","Teaser Phase":"F5A623","Launch":"E74C3C","Brand Collaborations":"27AE60","Influencers":"9B59B6","Bahrain Sports City":"E67E22","Competition & Leaderboard":"2980B9","UGC":"16A085","Email / CRM":"D35400","Post-Campaign":"95A5A6"};
 const CAT_BG={"Pre-Launch Content":"EBF5FB","Teaser Phase":"FEF9E7","Launch":"FDEDEC","Brand Collaborations":"EAFAF1","Influencers":"F5EEF8","Bahrain Sports City":"FEF5E7","Competition & Leaderboard":"EBF5FB","UGC":"E8F8F5","Email / CRM":"FDF2E9","Post-Campaign":"F2F3F4"};
 const CAT_ORDER=Object.keys(CAT_COLORS);
+
 const DEFAULT=[
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #1 (cryptic)",owner:"Yasir",start:"2026-07-10",end:"2026-07-10"},
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #2 (cryptic)",owner:"Yasir",start:"2026-07-17",end:"2026-07-17"},
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #3 (cryptic)",owner:"Yasir",start:"2026-07-24",end:"2026-07-24"},
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #4 (cryptic)",owner:"Yasir",start:"2026-07-31",end:"2026-07-31"},
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #5 (cryptic)",owner:"Yasir",start:"2026-08-07",end:"2026-08-07"},
-  {cat:"Pre-Launch Content",task:"Launch video — final edit delivered",owner:"Videography",start:"2026-07-06",end:"2026-08-04"},
-  {cat:"Pre-Launch Content",task:"Hero visual adaptations finalized",owner:"Design Team",start:"2026-07-06",end:"2026-07-20"},
-  {cat:"Teaser Phase",task:"Teaser post #1 — Helmet",owner:"Design Team",start:"2026-08-08",end:"2026-08-08"},
-  {cat:"Teaser Phase",task:"Teaser post #2 — Circuit",owner:"Design Team",start:"2026-08-09",end:"2026-08-09"},
-  {cat:"Teaser Phase",task:"Teaser post #3 — Tomorrow.",owner:"Design Team",start:"2026-08-11",end:"2026-08-11"},
-  {cat:"Launch",task:"Game goes LIVE",owner:"Digital Solutions",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Launch",task:"Launch video posted — KDR channels",owner:"Design Team",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Launch",task:"KDR launch post (hero visual + caption)",owner:"Design Team",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Brand Collaborations",task:"Deepal (Platinum) — collab post live",owner:"Corporate Comms",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Brand Collaborations",task:"Jetour (Gold) — collab post live",owner:"Corporate Comms",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Brand Collaborations",task:"iCAUR (Silver) — collab post live",owner:"Corporate Comms",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Brand Collaborations",task:"Toyota — raffle collab post",owner:"Corporate Comms",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Brand Collaborations",task:"Lexus — raffle collab post",owner:"Corporate Comms",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Influencers",task:"Tekkenmaster — reel + story live",owner:"Corporate Comms",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Influencers",task:"5osh Fkra — reel + story live",owner:"Corporate Comms",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Influencers",task:"Charlie / Gulf Insider — reel + story live",owner:"Corporate Comms",start:"2026-08-12",end:"2026-08-12"},
-  {cat:"Influencers",task:"GCC Influencer #1 (Qatar) — reel live",owner:"Corporate Comms",start:"2026-08-14",end:"2026-08-14"},
-  {cat:"Influencers",task:"GCC Influencer #2 (Kuwait) — reel live",owner:"Corporate Comms",start:"2026-08-16",end:"2026-08-16"},
-  {cat:"Influencers",task:"Influencer follow-up story (leaderboard)",owner:"Corporate Comms",start:"2026-08-26",end:"2026-08-26"},
-  {cat:"Bahrain Sports City",task:"BSC Event — KDR booth activation",owner:"Design Team",start:"2026-08-14",end:"2026-08-21"},
-  {cat:"Bahrain Sports City",task:"BSC social coverage posts",owner:"Design Team",start:"2026-08-14",end:"2026-08-21"},
-  {cat:"Competition & Leaderboard",task:"Leaderboard competition open",owner:"Digital Solutions",start:"2026-08-12",end:"2026-09-12"},
-  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 1",owner:"Design Team",start:"2026-08-19",end:"2026-08-19"},
-  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 2",owner:"Design Team",start:"2026-08-26",end:"2026-08-26"},
-  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 3",owner:"Design Team",start:"2026-09-02",end:"2026-09-02"},
-  {cat:"Competition & Leaderboard",task:"Last chance urgency posts",owner:"Design Team",start:"2026-09-07",end:"2026-09-12"},
-  {cat:"Competition & Leaderboard",task:"Leaderboard closes",owner:"Digital Solutions",start:"2026-09-12",end:"2026-09-12"},
-  {cat:"Competition & Leaderboard",task:"Winners announced — post",owner:"Design Team",start:"2026-09-14",end:"2026-09-14"},
-  {cat:"UGC",task:"UGC bonus draw open",owner:"Design Team",start:"2026-08-12",end:"2026-09-12"},
-  {cat:"UGC",task:"UGC reshares — ongoing",owner:"KDR Channel",start:"2026-08-13",end:"2026-09-12"},
-  {cat:"UGC",task:"UGC bonus draw winner announced",owner:"Design Team",start:"2026-09-14",end:"2026-09-14"},
-  {cat:"Email / CRM",task:"Email 1 — Welcome (auto on sign-up)",owner:"CRM",start:"2026-08-12",end:"2026-09-12"},
-  {cat:"Email / CRM",task:"Email 2 — Midway leaderboard update",owner:"CRM",start:"2026-08-26",end:"2026-08-26"},
-  {cat:"Email / CRM",task:"Email 3 — Last chance",owner:"CRM",start:"2026-09-07",end:"2026-09-07"},
-  {cat:"Email / CRM",task:"Email 4 — Winners + consolation offer",owner:"CRM",start:"2026-09-15",end:"2026-09-15"},
-  {cat:"Post-Campaign",task:"Campaign performance report",owner:"Design Team",start:"2026-09-16",end:"2026-09-25"},
-  {cat:"Post-Campaign",task:"CRM database handoff to rental team",owner:"CRM",start:"2026-09-16",end:"2026-09-20"},
+  {cat:"Pre-Launch Content",task:"Weekly build-up post #1 (cryptic)",owner:"Yasir",dates:["2026-07-10"]},
+  {cat:"Pre-Launch Content",task:"Weekly build-up post #2 (cryptic)",owner:"Yasir",dates:["2026-07-17"]},
+  {cat:"Pre-Launch Content",task:"Weekly build-up post #3 (cryptic)",owner:"Yasir",dates:["2026-07-24"]},
+  {cat:"Pre-Launch Content",task:"Weekly build-up post #4 (cryptic)",owner:"Yasir",dates:["2026-07-31"]},
+  {cat:"Pre-Launch Content",task:"Weekly build-up post #5 (cryptic)",owner:"Yasir",dates:["2026-08-07"]},
+  {cat:"Pre-Launch Content",task:"Launch video — final edit delivered",owner:"Videography",dates:["2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04"]},
+  {cat:"Pre-Launch Content",task:"Hero visual adaptations finalized",owner:"Design Team",dates:["2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20"]},
+  {cat:"Teaser Phase",task:"Teaser post #1 — Helmet",owner:"Design Team",dates:["2026-08-08"]},
+  {cat:"Teaser Phase",task:"Teaser post #2 — Circuit",owner:"Design Team",dates:["2026-08-09"]},
+  {cat:"Teaser Phase",task:"Teaser post #3 — Tomorrow.",owner:"Design Team",dates:["2026-08-11"]},
+  {cat:"Launch",task:"Game goes LIVE",owner:"Digital Solutions",dates:["2026-08-12"]},
+  {cat:"Launch",task:"Launch video posted — KDR channels",owner:"Design Team",dates:["2026-08-12"]},
+  {cat:"Launch",task:"KDR launch post (hero visual + caption)",owner:"Design Team",dates:["2026-08-12"]},
+  {cat:"Brand Collaborations",task:"Deepal (Platinum) — collab post live",owner:"Corporate Comms",dates:["2026-08-12"]},
+  {cat:"Brand Collaborations",task:"Jetour (Gold) — collab post live",owner:"Corporate Comms",dates:["2026-08-12"]},
+  {cat:"Brand Collaborations",task:"iCAUR (Silver) — collab post live",owner:"Corporate Comms",dates:["2026-08-12"]},
+  {cat:"Brand Collaborations",task:"Toyota — raffle collab post",owner:"Corporate Comms",dates:["2026-08-12"]},
+  {cat:"Brand Collaborations",task:"Lexus — raffle collab post",owner:"Corporate Comms",dates:["2026-08-12"]},
+  {cat:"Influencers",task:"Tekkenmaster — reel + story live",owner:"Corporate Comms",dates:["2026-08-12"]},
+  {cat:"Influencers",task:"5osh Fkra — reel + story live",owner:"Corporate Comms",dates:["2026-08-12"]},
+  {cat:"Influencers",task:"Charlie / Gulf Insider — reel + story live",owner:"Corporate Comms",dates:["2026-08-12"]},
+  {cat:"Influencers",task:"GCC Influencer #1 (Qatar) — reel live",owner:"Corporate Comms",dates:["2026-08-14"]},
+  {cat:"Influencers",task:"GCC Influencer #2 (Kuwait) — reel live",owner:"Corporate Comms",dates:["2026-08-16"]},
+  {cat:"Influencers",task:"Influencer follow-up story (leaderboard)",owner:"Corporate Comms",dates:["2026-08-26"]},
+  {cat:"Bahrain Sports City",task:"BSC Event — KDR booth activation",owner:"Design Team",dates:["2026-08-14","2026-08-15","2026-08-16","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21"]},
+  {cat:"Bahrain Sports City",task:"BSC social coverage posts",owner:"Design Team",dates:["2026-08-14","2026-08-17","2026-08-19","2026-08-21"]},
+  {cat:"Competition & Leaderboard",task:"Leaderboard competition open",owner:"Digital Solutions",dates:["2026-08-12","2026-08-13","2026-08-14","2026-08-15","2026-08-16","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-22","2026-08-23","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12"]},
+  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 1",owner:"Design Team",dates:["2026-08-19"]},
+  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 2",owner:"Design Team",dates:["2026-08-26"]},
+  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 3",owner:"Design Team",dates:["2026-09-02"]},
+  {cat:"Competition & Leaderboard",task:"Last chance urgency posts",owner:"Design Team",dates:["2026-09-07","2026-09-09","2026-09-12"]},
+  {cat:"Competition & Leaderboard",task:"Leaderboard closes",owner:"Digital Solutions",dates:["2026-09-12"]},
+  {cat:"Competition & Leaderboard",task:"Winners announced — post",owner:"Design Team",dates:["2026-09-14"]},
+  {cat:"UGC",task:"UGC bonus draw open",owner:"Design Team",dates:["2026-08-12"]},
+  {cat:"UGC",task:"UGC reshares — ongoing",owner:"KDR Channel",dates:["2026-08-13","2026-08-20","2026-08-27","2026-09-03","2026-09-10"]},
+  {cat:"UGC",task:"UGC bonus draw winner announced",owner:"Design Team",dates:["2026-09-14"]},
+  {cat:"Email / CRM",task:"Email 1 — Welcome (auto on sign-up)",owner:"CRM",dates:["2026-08-12"]},
+  {cat:"Email / CRM",task:"Email 2 — Midway leaderboard update",owner:"CRM",dates:["2026-08-26"]},
+  {cat:"Email / CRM",task:"Email 3 — Last chance",owner:"CRM",dates:["2026-09-07"]},
+  {cat:"Email / CRM",task:"Email 4 — Winners + consolation offer",owner:"CRM",dates:["2026-09-15"]},
+  {cat:"Post-Campaign",task:"Campaign performance report",owner:"Design Team",dates:["2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25"]},
+  {cat:"Post-Campaign",task:"CRM database handoff to rental team",owner:"CRM",dates:["2026-09-16","2026-09-17","2026-09-18","2026-09-21"]},
 ];
 
-const STORAGE_KEY='kdr-gantt-tasks';
+const STORAGE_KEY='kdr-gantt-tasks-v4';
 let tasks=JSON.parse(JSON.stringify(DEFAULT));
 let filterMode='all';
 let editIdx=-1;
+let newDates=[];
+let editDates=[];
+
 const START=new Date('2026-07-06T00:00:00');
 const END=new Date('2026-09-30T00:00:00');
 const TODAY='2026-07-06';
 
 function allDates(){let d=[],c=new Date(START);while(c<=END){d.push(new Date(c));c.setDate(c.getDate()+1);}return d;}
 function fmt(d){return d instanceof Date?d.toISOString().split('T')[0]:d;}
-function parseD(s){return new Date(s+'T00:00:00');}
 
 function getActiveDates(){
   const s=new Set();
-  tasks.forEach(t=>{let c=parseD(t.start);const e=parseD(t.end);while(c<=e){s.add(fmt(c));c.setDate(c.getDate()+1);}});
+  tasks.forEach(t=>(t.dates||[]).forEach(d=>s.add(d)));
   return s;
 }
 function getUpcomingDates(){
-  const s=new Set(),tod=parseD(TODAY);
-  tasks.forEach(t=>{if(parseD(t.end)>=tod){let c=parseD(t.start);const e=parseD(t.end);while(c<=e){s.add(fmt(c));c.setDate(c.getDate()+1);}}});
+  const s=new Set(),tod=TODAY;
+  tasks.forEach(t=>(t.dates||[]).filter(d=>d>=tod).forEach(d=>s.add(d)));
   return s;
 }
 
@@ -200,6 +224,34 @@ function save(){
 }
 function setStatus(m){document.getElementById('status').textContent=m;}
 function setFilter(mode,btn){filterMode=mode;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+
+// New task date tags
+function renderNewTags(){
+  const el=document.getElementById('inp-dates-tags');
+  el.innerHTML=newDates.sort().map((d,i)=>`<div class="date-tag">${d}<span onclick="removeNewDate(${i})">✕</span></div>`).join('');
+}
+function addDateTag(){
+  const v=document.getElementById('inp-date-picker').value;
+  if(!v){alert('Pick a date.');return;}
+  if(newDates.includes(v)){alert('Already added.');return;}
+  newDates.push(v);renderNewTags();
+  document.getElementById('inp-date-picker').value='';
+}
+function removeNewDate(i){newDates.splice(i,1);renderNewTags();}
+
+// Edit task date tags
+function renderEditTags(){
+  const el=document.getElementById('ed-dates-tags');
+  el.innerHTML=editDates.sort().map((d,i)=>`<div class="date-tag">${d}<span onclick="removeEditDate(${i})">✕</span></div>`).join('');
+}
+function addEditDateTag(){
+  const v=document.getElementById('ed-date-picker').value;
+  if(!v){alert('Pick a date.');return;}
+  if(editDates.includes(v)){alert('Already added.');return;}
+  editDates.push(v);renderEditTags();
+  document.getElementById('ed-date-picker').value='';
+}
+function removeEditDate(i){editDates.splice(i,1);renderEditTags();}
 
 function render(){
   const allD=allDates();
@@ -219,15 +271,16 @@ function render(){
     if(!ct.length)return;
     const col=CAT_COLORS[cat],bg=CAT_BG[cat];
     html+=`<tr class="cat-row"><td colspan="${dates.length+3}" style="background:#${bg};color:#${col};border-left:4px solid #${col}">${cat}</td></tr>`;
-    ct.forEach(t=>{
-      const idx=tasks.indexOf(t),ts=parseD(t.start),te=parseD(t.end),even=ct.indexOf(t)%2===0;
+    ct.forEach((t,ti)=>{
+      const idx=tasks.indexOf(t);
+      const taskDates=new Set(t.dates||[]);
+      const even=ti%2===0;
       const rb=even?'#fff':'#fcfcfe';
       html+=`<tr class="task-row"><td class="t-act" style="background:${rb}" onclick="openEdit(${idx})" title="Click to edit">✏ ${t.task}</td><td class="t-own" style="background:${rb}">${t.owner||''}</td>`;
       dates.forEach(d=>{
-        const wk=d.getDay()===0||d.getDay()===6,inR=d>=ts&&d<=te,tod=fmt(d)===TODAY;
-        const isS=fmt(d)===t.start,isE=fmt(d)===t.end;
+        const wk=d.getDay()===0||d.getDay()===6,fd=fmt(d),inR=taskDates.has(fd),tod=fd===TODAY;
         let cell='';
-        if(inR){const r=isS&&isE?'10px':isS?'10px 0 0 10px':isE?'0 10px 10px 0':'0';cell=`<span class="bar" style="background:#${col};border-radius:${r};opacity:.9"></span>`;}
+        if(inR){cell=`<span class="dot" style="background:#${col};opacity:.9"></span>`;}
         html+=`<td class="t-day${wk&&!inR?' weekend':''}${tod?' today-d':''}" style="${wk&&!inR?'background:#fafafa':''}">${cell}</td>`;
       });
       html+=`<td class="t-del"><button class="btn-del" onclick="delTask(${idx})">✕</button></td></tr>`;
@@ -241,25 +294,30 @@ function render(){
 }
 
 function addTask(){
-  const task=document.getElementById('inp-task').value.trim(),owner=document.getElementById('inp-owner').value.trim(),cat=document.getElementById('inp-cat').value,start=document.getElementById('inp-start').value,end=document.getElementById('inp-end').value;
-  if(!task||!start||!end){alert('Fill in Activity, Start, and End.');return;}
-  if(end<start){alert('End must be on or after Start.');return;}
-  tasks.push({cat,task,owner,start,end});
-  document.getElementById('inp-task').value='';document.getElementById('inp-owner').value='';
+  const task=document.getElementById('inp-task').value.trim();
+  const owner=document.getElementById('inp-owner').value.trim();
+  const cat=document.getElementById('inp-cat').value;
+  if(!task){alert('Fill in Activity name.');return;}
+  if(!newDates.length){alert('Add at least one date.');return;}
+  tasks.push({cat,task,owner,dates:[...newDates]});
+  document.getElementById('inp-task').value='';
+  document.getElementById('inp-owner').value='';
+  newDates=[];renderNewTags();
   save();render();
 }
 function delTask(idx){if(!confirm('Delete "'+tasks[idx].task+'"?'))return;tasks.splice(idx,1);save();render();}
 function openEdit(idx){
   editIdx=idx;const t=tasks[idx];
-  document.getElementById('ed-task').value=t.task;document.getElementById('ed-owner').value=t.owner||'';
-  document.getElementById('ed-cat').value=t.cat;document.getElementById('ed-start').value=t.start;document.getElementById('ed-end').value=t.end;
+  document.getElementById('ed-task').value=t.task;
+  document.getElementById('ed-owner').value=t.owner||'';
+  document.getElementById('ed-cat').value=t.cat;
+  editDates=[...(t.dates||[])];renderEditTags();
   document.getElementById('modal').classList.add('open');
 }
-function closeModal(){document.getElementById('modal').classList.remove('open');editIdx=-1;}
+function closeModal(){document.getElementById('modal').classList.remove('open');editIdx=-1;editDates=[];}
 function saveEdit(){
-  const start=document.getElementById('ed-start').value,end=document.getElementById('ed-end').value;
-  if(end<start){alert('End must be on or after Start.');return;}
-  tasks[editIdx]={task:document.getElementById('ed-task').value.trim(),owner:document.getElementById('ed-owner').value.trim(),cat:document.getElementById('ed-cat').value,start,end};
+  if(!editDates.length){alert('Add at least one date.');return;}
+  tasks[editIdx]={task:document.getElementById('ed-task').value.trim(),owner:document.getElementById('ed-owner').value.trim(),cat:document.getElementById('ed-cat').value,dates:[...editDates]};
   closeModal();save();render();
 }
 function resetToDefault(){if(!confirm('Reset all tasks to default?'))return;tasks=JSON.parse(JSON.stringify(DEFAULT));save();render();}
