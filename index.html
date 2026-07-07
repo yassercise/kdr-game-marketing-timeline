@@ -323,7 +323,7 @@ function setFilter(mode,btn){filterMode=mode;document.querySelectorAll('.filter-
 // ── Shared calendar popup ─────────────────────────────────
 const calState={year:2026,month:6};
 let activeCalNs='inp';
-const DOWS=['S','S','M','T','W','T','F'];
+const DOWS=['Su','Mo','Tu','We','Th','Fr','Sa'];
 
 function fmtCal(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
 
