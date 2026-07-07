@@ -82,12 +82,13 @@ td.t-del{text-align:center;background:#fff;padding:4px}
 
 <div class="controls">
   <div class="field-group"><div class="field-label">Activity</div><input type="text" id="inp-task" placeholder="Activity name"/></div>
-  <div class="field-group"><div class="field-label">Owner</div><input type="text" id="inp-owner" placeholder="Owner" style="width:110px"/></div>
+  <div class="field-group"><div class="field-label">Owner</div>
+    <select id="inp-owner" style="width:130px" onchange="handleOwnerChange('inp-owner')">
+      <option value="">Select owner</option>
+    </select>
+  </div>
   <div class="field-group"><div class="field-label">Category</div>
-    <select id="inp-cat">
-      <option>Pre-Launch Content</option><option>Teaser Phase</option><option>Launch</option>
-      <option>Brand Collaborations</option><option>Influencers</option><option>Bahrain Sports City</option>
-      <option>Competition & Leaderboard</option><option>UGC</option><option>Email / CRM</option><option>Post-Campaign</option>
+    <select id="inp-cat" onchange="handleCatChange('inp-cat')">
     </select>
   </div>
   <div class="field-group dates-input">
@@ -119,13 +120,11 @@ td.t-del{text-align:center;background:#fff;padding:4px}
   <div class="modal">
     <h3>Edit task</h3>
     <div class="field-group"><div class="field-label">Activity</div><input type="text" id="ed-task"/></div>
-    <div class="field-group"><div class="field-label">Owner</div><input type="text" id="ed-owner"/></div>
+    <div class="field-group"><div class="field-label">Owner</div>
+      <select id="ed-owner" onchange="handleOwnerChange('ed-owner')"></select>
+    </div>
     <div class="field-group"><div class="field-label">Category</div>
-      <select id="ed-cat">
-        <option>Pre-Launch Content</option><option>Teaser Phase</option><option>Launch</option>
-        <option>Brand Collaborations</option><option>Influencers</option><option>Bahrain Sports City</option>
-        <option>Competition & Leaderboard</option><option>UGC</option><option>Email / CRM</option><option>Post-Campaign</option>
-      </select>
+      <select id="ed-cat" onchange="handleCatChange('ed-cat')"></select>
     </div>
     <div class="field-group dates-input">
       <div class="field-label">Dates</div>
@@ -146,6 +145,53 @@ td.t-del{text-align:center;background:#fff;padding:4px}
 const CAT_COLORS={"Pre-Launch Content":"4A90D9","Teaser Phase":"F5A623","Launch":"E74C3C","Brand Collaborations":"27AE60","Influencers":"9B59B6","Bahrain Sports City":"E67E22","Competition & Leaderboard":"2980B9","UGC":"16A085","Email / CRM":"D35400","Post-Campaign":"95A5A6"};
 const CAT_BG={"Pre-Launch Content":"EBF5FB","Teaser Phase":"FEF9E7","Launch":"FDEDEC","Brand Collaborations":"EAFAF1","Influencers":"F5EEF8","Bahrain Sports City":"FEF5E7","Competition & Leaderboard":"EBF5FB","UGC":"E8F8F5","Email / CRM":"FDF2E9","Post-Campaign":"F2F3F4"};
 const CAT_ORDER=Object.keys(CAT_COLORS);
+let owners=['Yasir','Design Team','Videography','Digital Solutions','Corporate Comms','CRM','KDR Channel'];
+
+function populateSelects(){
+  ['inp-owner','ed-owner'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Select owner</option>'+owners.map(o=>`<option value="${o}">${o}</option>`).join('')+'<option value="__new__">+ Add new owner</option>';
+    if(cur&&cur!=='__new__')sel.value=cur;
+  });
+  ['inp-cat','ed-cat'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML=CAT_ORDER.map(c=>`<option value="${c}">${c}</option>`).join('')+'<option value="__new__">+ Add new category</option>';
+    if(cur&&cur!=='__new__')sel.value=cur;
+  });
+}
+
+function handleOwnerChange(selId){
+  const sel=document.getElementById(selId);
+  if(sel.value!=='__new__')return;
+  const name=(prompt('New owner name:')||'').trim();
+  if(name&&!owners.includes(name)){owners.push(name);saveOwners();populateSelects();}
+  sel.value=name&&owners.includes(name)?name:'';
+}
+
+function handleCatChange(selId){
+  const sel=document.getElementById(selId);
+  if(sel.value!=='__new__')return;
+  const name=(prompt('New category name:')||'').trim();
+  if(name&&!CAT_ORDER.includes(name)){
+    CAT_ORDER.push(name);CAT_COLORS[name]='888888';CAT_BG[name]='F5F5F5';
+    saveCats();populateSelects();render();
+  }
+  sel.value=name&&CAT_ORDER.includes(name)?name:CAT_ORDER[0];
+}
+
+function saveOwners(){try{localStorage.setItem('kdr-owners',JSON.stringify(owners));}catch(e){}}
+function saveCats(){try{localStorage.setItem('kdr-cats',JSON.stringify({order:[...CAT_ORDER],colors:{...CAT_COLORS},bgs:{...CAT_BG}}));}catch(e){}}
+
+function loadMeta(){
+  try{const o=localStorage.getItem('kdr-owners');if(o)JSON.parse(o).forEach(x=>{if(!owners.includes(x))owners.push(x);});}catch(e){}
+  try{
+    const c=localStorage.getItem('kdr-cats');
+    if(c){const p=JSON.parse(c);p.order.forEach(x=>{if(!CAT_ORDER.includes(x)){CAT_ORDER.push(x);CAT_COLORS[x]=p.colors[x]||'888888';CAT_BG[x]=p.bgs[x]||'F5F5F5';}});}
+  }catch(e){}
+  populateSelects();
+}
 
 const DEFAULT=[
   {cat:"Pre-Launch Content",task:"Weekly build-up post #1 (cryptic)",owner:"Yasir",dates:["2026-07-10"]},
@@ -217,10 +263,6 @@ function getUpcomingDates(){
   return s;
 }
 
-function load(){
-  try{const d=localStorage.getItem(STORAGE_KEY);if(d)tasks=JSON.parse(d);}catch(e){}
-  render();
-}
 function save(){
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));setStatus('Saved at '+new Date().toLocaleTimeString());}
   catch(e){setStatus('Could not save.');}
@@ -298,7 +340,7 @@ function render(){
 
 function addTask(){
   const task=document.getElementById('inp-task').value.trim();
-  const owner=document.getElementById('inp-owner').value.trim();
+  const owner=document.getElementById('inp-owner').value;
   const cat=document.getElementById('inp-cat').value;
   if(!task){alert('Fill in Activity name.');return;}
   if(!newDates.length){alert('Add at least one date.');return;}
@@ -312,6 +354,7 @@ function delTask(idx){if(!confirm('Delete "'+tasks[idx].task+'"?'))return;tasks.
 function openEdit(idx){
   editIdx=idx;const t=tasks[idx];
   document.getElementById('ed-task').value=t.task;
+  populateSelects();
   document.getElementById('ed-owner').value=t.owner||'';
   document.getElementById('ed-cat').value=t.cat;
   editDates=[...(t.dates||[])];renderEditTags();
@@ -320,7 +363,7 @@ function openEdit(idx){
 function closeModal(){document.getElementById('modal').classList.remove('open');editIdx=-1;editDates=[];}
 function saveEdit(){
   if(!editDates.length){alert('Add at least one date.');return;}
-  tasks[editIdx]={task:document.getElementById('ed-task').value.trim(),owner:document.getElementById('ed-owner').value.trim(),cat:document.getElementById('ed-cat').value,dates:[...editDates]};
+  tasks[editIdx]={task:document.getElementById('ed-task').value.trim(),owner:document.getElementById('ed-owner').value,cat:document.getElementById('ed-cat').value,dates:[...editDates]};
   closeModal();save();render();
 }
 function resetToDefault(){if(!confirm('Reset all tasks to default?'))return;tasks=JSON.parse(JSON.stringify(DEFAULT));save();render();}
@@ -348,6 +391,11 @@ document.getElementById('gantt-wrap').addEventListener('mouseout',function(e){
 function clearHover(table){
   table.querySelectorAll('.dot-hover').forEach(el=>el.classList.remove('dot-hover'));
   table.querySelectorAll('.col-hover').forEach(el=>el.classList.remove('col-hover'));
+}
+function load(){
+  try{const d=localStorage.getItem(STORAGE_KEY);if(d)tasks=JSON.parse(d);}catch(e){}
+  loadMeta();
+  render();
 }
 load();
 </script>
