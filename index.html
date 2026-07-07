@@ -29,8 +29,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;fo
 .date-tag span:hover{opacity:1}
 .date-add-row{display:flex;gap:6px;align-items:center}
 .date-add-row input[type=date]{width:138px}
-.mini-cal-wrap{border:1.5px solid #e8e8f0;border-radius:10px;padding:8px;background:#fafafa;width:224px;display:none}
-.mini-cal-wrap.open{display:block}
+.mini-cal-wrap{display:none}
+.cal-popup-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:rgba(0,0,0,.25)}
+.cal-popup-overlay.open{display:flex;align-items:center;justify-content:center}
+.cal-popup{background:#fff;border-radius:14px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,.18);width:260px}
+.cal-popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-popup-header h4{font-size:13px;font-weight:700;color:#1a1a2e}
+.cal-popup-close{background:none;border:none;cursor:pointer;font-size:18px;color:#aaa;line-height:1}
+.cal-popup-close:hover{color:#e74c3c}
+.cal-popup-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.btn-cal-done{background:#6c63ff;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-cal-clear{background:none;border:none;font-size:11px;color:#aaa;cursor:pointer}
+.btn-cal-clear:hover{color:#e74c3c}
 .mini-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .mini-cal-nav button{background:none;border:none;cursor:pointer;font-size:16px;color:#666;padding:2px 6px;border-radius:4px}
 .mini-cal-nav button:hover{background:#e8e8f0}
@@ -118,15 +128,7 @@ td.t-del{text-align:center;background:#fff;padding:4px}
   </div>
   <div class="field-group dates-input">
     <div class="field-label">Dates <span id="inp-dates-count" style="color:#6c63ff;font-weight:700"></span></div>
-    <button class="btn-date-add" onclick="toggleCal('inp')" id="inp-cal-toggle">📅 Select dates</button>
-    <div class="mini-cal-wrap" id="inp-cal-wrap">
-      <div class="mini-cal-nav">
-        <button onclick="calNav('inp',-1)">&#8249;</button>
-        <span id="inp-cal-label"></span>
-        <button onclick="calNav('inp',1)">&#8250;</button>
-      </div>
-      <div class="mini-cal-grid" id="inp-cal-grid"></div>
-    </div>
+    <button class="btn-date-add" onclick="openCal('inp')">Select dates</button>
     <div class="dates-tags" id="inp-dates-tags" style="margin-top:6px;max-width:280px"></div>
   </div>
   <div class="field-group"><div class="field-label">&nbsp;</div><button class="btn-add" onclick="addTask()">+ Add task</button></div>
@@ -158,21 +160,33 @@ td.t-del{text-align:center;background:#fff;padding:4px}
     </div>
     <div class="field-group dates-input">
       <div class="field-label">Dates <span id="ed-dates-count" style="color:#6c63ff;font-weight:700"></span></div>
-      <button class="btn-date-add" onclick="toggleCal('ed')">📅 Select dates</button>
-      <div class="mini-cal-wrap" id="ed-cal-wrap">
-        <div class="mini-cal-nav">
-          <button onclick="calNav('ed',-1)">&#8249;</button>
-          <span id="ed-cal-label"></span>
-          <button onclick="calNav('ed',1)">&#8250;</button>
-        </div>
-        <div class="mini-cal-grid" id="ed-cal-grid"></div>
-      </div>
+      <button class="btn-date-add" onclick="openCal('ed')">Select dates</button>
       <div class="dates-tags" id="ed-dates-tags" style="margin-top:6px"></div>
     </div>
     <div class="modal-btns">
       <button class="btn-save" onclick="saveEdit()">Save</button>
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
     </div>
+  </div>
+</div>
+
+<div class="cal-popup-overlay" id="cal-popup-overlay" onclick="handleCalOverlayClick(event)">
+  <div class="cal-popup">
+    <div class="cal-popup-header">
+      <h4 id="cal-popup-title">Select dates</h4>
+      <button class="cal-popup-close" onclick="closeCal()">×</button>
+    </div>
+    <div class="mini-cal-nav">
+      <button onclick="calNav('_active',-1)">&#8249;</button>
+      <span id="_active-cal-label"></span>
+      <button onclick="calNav('_active',1)">&#8250;</button>
+    </div>
+    <div class="mini-cal-grid" id="_active-cal-grid" style="margin-top:8px"></div>
+    <div class="cal-popup-actions">
+      <button class="btn-cal-clear" onclick="clearCalDates()">Clear all</button>
+      <button class="btn-cal-done" onclick="closeCal()">Done</button>
+    </div>
+    <div class="dates-tags" id="_active-dates-tags" style="margin-top:10px;max-width:220px"></div>
   </div>
 </div>
 
@@ -306,22 +320,48 @@ function save(){
 function setStatus(m){document.getElementById('status').textContent=m;}
 function setFilter(mode,btn){filterMode=mode;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
 
-// ── Inline multi-select calendar ──────────────────────────
-const calState={inp:{year:2026,month:6},ed:{year:2026,month:6}};// month is 0-indexed
+// ── Shared calendar popup ─────────────────────────────────
+const calState={year:2026,month:6};
+let activeCalNs='inp';
 const DOWS=['S','S','M','T','W','T','F'];
 
 function fmtCal(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
 
-function toggleCal(ns){
-  const wrap=document.getElementById(`${ns}-cal-wrap`);
-  wrap.classList.toggle('open');
+function openCal(ns){
+  activeCalNs=ns;
+  calState.year=2026;calState.month=6;
+  const dates=ns==='inp'?newDates:editDates;
+  if(dates.length){calState.year=parseInt(dates[0].split('-')[0]);calState.month=parseInt(dates[0].split('-')[1])-1;}
+  document.getElementById('cal-popup-title').textContent=ns==='inp'?'Select dates':'Edit dates';
+  document.getElementById('cal-popup-overlay').classList.add('open');
+  renderCal();
 }
 
-function renderCal(ns){
-  const {year,month}=calState[ns];
+function closeCal(){
+  document.getElementById('cal-popup-overlay').classList.remove('open');
+  renderCalTags(activeCalNs);
+}
+
+function handleCalOverlayClick(e){if(e.target===document.getElementById('cal-popup-overlay'))closeCal();}
+
+function clearCalDates(){
+  if(activeCalNs==='inp')newDates.length=0;else editDates.length=0;
+  renderCal();
+}
+
+function calNav(ns,dir){
+  calState.month+=dir;
+  if(calState.month>11){calState.month=0;calState.year++;}
+  if(calState.month<0){calState.month=11;calState.year--;}
+  renderCal();
+}
+
+function renderCal(){
+  const ns=activeCalNs;
+  const {year,month}=calState;
   const dates=ns==='inp'?newDates:editDates;
   const label=new Date(year,month,1).toLocaleString('default',{month:'long',year:'numeric'});
-  document.getElementById(`${ns}-cal-label`).textContent=label;
+  document.getElementById('_active-cal-label').textContent=label;
   const firstDay=new Date(year,month,1).getDay();
   const daysInMonth=new Date(year,month+1,0).getDate();
   let html=DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join('');
@@ -332,24 +372,20 @@ function renderCal(ns){
     const tod=fd===TODAY;
     const dow=new Date(year,month,d).getDay();
     const wk=dow===5||dow===6;
-    html+=`<div class="cal-day${sel?' selected':''}${tod&&!sel?' today':''}${wk&&!sel?' weekend':''}" onclick="toggleCalDate('${ns}','${fd}')">${d}</div>`;
+    html+=`<div class="cal-day${sel?' selected':''}${tod&&!sel?' today':''}${wk&&!sel?' weekend':''}" onclick="toggleCalDate('${fd}')">${d}</div>`;
   }
-  document.getElementById(`${ns}-cal-grid`).innerHTML=html;
-  renderCalTags(ns);
+  document.getElementById('_active-cal-grid').innerHTML=html;
+  const tagEl=document.getElementById('_active-dates-tags');
+  tagEl.innerHTML=dates.sort().map(d=>`<div class="date-tag">${d}<span onclick="toggleCalDate('${d}')">✕</span></div>`).join('');
+  const countEl=document.getElementById(`${ns}-dates-count`);
+  if(countEl)countEl.textContent=dates.length?`(${dates.length} selected)`:'';
 }
 
-function calNav(ns,dir){
-  calState[ns].month+=dir;
-  if(calState[ns].month>11){calState[ns].month=0;calState[ns].year++;}
-  if(calState[ns].month<0){calState[ns].month=11;calState[ns].year--;}
-  renderCal(ns);
-}
-
-function toggleCalDate(ns,fd){
-  const arr=ns==='inp'?newDates:editDates;
+function toggleCalDate(fd){
+  const arr=activeCalNs==='inp'?newDates:editDates;
   const i=arr.indexOf(fd);
   if(i>=0)arr.splice(i,1);else arr.push(fd);
-  renderCal(ns);
+  renderCal();
 }
 
 function renderCalTags(ns){
@@ -357,17 +393,16 @@ function renderCalTags(ns){
   const el=document.getElementById(`${ns}-dates-tags`);
   const countEl=document.getElementById(`${ns}-dates-count`);
   if(countEl)countEl.textContent=arr.length?`(${arr.length} selected)`:'';
-  if(!el)return;
-  el.innerHTML=arr.sort().map((d,i)=>`<div class="date-tag">${d}<span onclick="toggleCalDate('${ns === 'inp' ? 'inp' : 'ed'}','${d}')">✕</span></div>`).join('');
+  if(el)el.innerHTML=arr.sort().map(d=>`<div class="date-tag">${d}<span onclick="removeDateTag('${ns}','${d}')">✕</span></div>`).join('');
 }
 
-function initCals(){
-  const now=new Date();
-  calState.inp={year:2026,month:6};
-  calState.ed={year:2026,month:6};
-  newDates=[];editDates=[];
-  renderCal('inp');
+function removeDateTag(ns,fd){
+  const arr=ns==='inp'?newDates:editDates;
+  const i=arr.indexOf(fd);if(i>=0)arr.splice(i,1);
+  renderCalTags(ns);
 }
+
+function initCals(){newDates=[];editDates=[];}
 
 function render(){
   const allD=allDates();
@@ -459,7 +494,7 @@ function addTask(){
   document.getElementById('inp-task').value='';
   document.getElementById('inp-owner').value='';
   newDates=[];
-  renderCal('inp');
+  renderCalTags('inp');
   save();render();
 }
 function delTask(idx){if(!confirm('Delete "'+tasks[idx].task+'"?'))return;tasks.splice(idx,1);save();render();}
@@ -470,13 +505,7 @@ function openEdit(idx){
   document.getElementById('ed-owner').value=t.owner||'';
   document.getElementById('ed-cat').value=t.cat;
   editDates=[...(t.dates||[])];
-  if(editDates.length){
-    const first=editDates[0];
-    calState.ed.year=parseInt(first.split('-')[0]);
-    calState.ed.month=parseInt(first.split('-')[1])-1;
-  }
-  renderCal('ed');
-  document.getElementById('ed-cal-wrap').classList.add('open');
+  renderCalTags('ed');
   document.getElementById('modal').classList.add('open');
 }
 function closeModal(){document.getElementById('modal').classList.remove('open');editIdx=-1;editDates=[];}
