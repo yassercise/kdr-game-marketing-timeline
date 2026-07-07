@@ -7,9 +7,12 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:13px;background:#f5f6fa;color:#1a1a2e;padding:20px}
-.header{margin-bottom:18px}
+.header{margin-bottom:12px}
 .header h2{font-size:17px;font-weight:700;color:#1a1a2e;letter-spacing:.3px}
-.header p{font-size:11px;color:#888;margin-top:2px}
+.launch-badge{display:inline-flex;align-items:center;gap:8px;margin-top:8px;background:#fff;border:1.5px solid #e74c3c;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:#e74c3c;box-shadow:0 0 0 0 rgba(231,76,60,.4);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,76,60,.4)}70%{box-shadow:0 0 0 8px rgba(231,76,60,0)}100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}}
+.launch-dot{width:7px;height:7px;border-radius:50%;background:#e74c3c;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .controls{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 .field-group{display:flex;flex-direction:column;gap:3px}
 .field-label{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
@@ -40,16 +43,22 @@ thead{position:sticky;top:0;z-index:10}
 .h-day{font-size:10px;font-weight:600;color:#888;text-align:center;padding:5px 2px;border-bottom:2px solid #e8e8f0;min-width:26px;width:26px;background:#f9f9fc}
 .h-day.weekend{color:#ccc;background:#fafafa}
 .h-day.today-h{background:#6c63ff;color:#fff;border-radius:4px}
+.h-day.launch-h{background:#e74c3c!important;color:#fff!important;border-radius:4px;font-weight:800}
 .h-act{text-align:left;padding:6px 14px;font-size:11px;font-weight:700;color:#555;background:#f9f9fc;border-bottom:2px solid #e8e8f0;min-width:260px;position:sticky;left:0;z-index:11}
 .h-own{text-align:center;padding:6px 8px;font-size:11px;font-weight:700;color:#555;background:#f9f9fc;border-bottom:2px solid #e8e8f0;min-width:100px;position:sticky;left:200px;z-index:11}
 .h-del{background:#f9f9fc;border-bottom:2px solid #e8e8f0;width:60px}
 .cat-row td{padding:6px 14px;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;border-top:1px solid #e8e8f0}
 .task-row td{border-bottom:1px solid #f0f0f8;padding:5px 2px}
 .task-row:hover td{background:#f9f9fc!important}
-td.t-act{padding:5px 14px;font-size:12px;color:#2d2d44;background:#fff;position:sticky;left:0;z-index:1;cursor:pointer;white-space:nowrap;min-width:260px}
+.task-row.dragging{opacity:.4}
+.task-row.drag-over td{border-top:2px solid #6c63ff}
+td.t-act{padding:5px 6px 5px 14px;font-size:12px;color:#2d2d44;background:#fff;position:sticky;left:0;z-index:1;cursor:grab;white-space:nowrap;min-width:260px;display:table-cell}
+td.t-act:active{cursor:grabbing}
+.drag-handle{color:#ccc;font-size:12px;margin-right:4px;cursor:grab}
 td.t-own{text-align:center;font-size:11px;color:#999;background:#fff;padding:5px 8px;white-space:nowrap;position:sticky;left:200px;z-index:1}
 td.t-day{min-width:26px;width:26px;padding:3px 2px}
 td.t-day.weekend{background:#fafafa}
+td.t-day.launch-d{border-left:2px solid #e74c3c;border-right:1px solid #fbbbb5}
 td.t-day.today-d{border-left:2px solid #6c63ff}
 td.t-day.dot-hover{background:#e8e8f8!important}
 td.t-day.dot-hover .dot{transform:scale(1.2)}
@@ -77,7 +86,7 @@ td.t-del{text-align:center;background:#fff;padding:4px}
 <body>
 <div class="header">
   <h2>KDR Racing Game - Marketing Campaign Timeline</h2>
-  <p>Launch: August 12, 2026 &nbsp;·&nbsp; Today: July 6, 2026</p>
+  <div class="launch-badge"><span class="launch-dot"></span>Launch Day — August 12, 2026</div>
 </div>
 
 <div class="controls">
@@ -248,6 +257,7 @@ let editDates=[];
 const _td=new Date();const TODAY=`${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
 const START=new Date('2026-07-06T00:00:00');
 const END=new Date('2026-09-30T00:00:00');
+const LAUNCH='2026-08-12';
 
 function allDates(){let d=[],c=new Date(START);while(c<=END){d.push(new Date(c));c.setDate(c.getDate()+1);}return d;}
 function fmt(d){if(!(d instanceof Date))return d;const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
@@ -308,25 +318,32 @@ function render(){
   let html='<table><thead><tr><th class="h-act" rowspan="2">Activity</th><th class="h-own" rowspan="2">Owner</th>';
   Object.values(months).forEach(m=>{html+=`<th class="h-month" colspan="${m.count}">${m.label}</th>`;});
   html+='<th class="h-del" rowspan="2"></th></tr><tr>';
-  dates.forEach(d=>{const wk=d.getDay()===5||d.getDay()===6,tod=fmt(d)===TODAY;html+=`<th class="h-day${wk?' weekend':''}${tod?' today-h':''}">${d.getDate()}</th>`;});
+  dates.forEach(d=>{
+    const wk=d.getDay()===5||d.getDay()===6,tod=fmt(d)===TODAY,launch=fmt(d)===LAUNCH;
+    html+=`<th class="h-day${wk?' weekend':''}${tod?' today-h':''}${launch?' launch-h':''}">${d.getDate()}</th>`;
+  });
   html+='</tr></thead><tbody>';
 
   CAT_ORDER.forEach(cat=>{
     const ct=tasks.filter(t=>t.cat===cat);
     if(!ct.length)return;
     const col=CAT_COLORS[cat],bg=CAT_BG[cat];
-    html+=`<tr class="cat-row"><td colspan="${dates.length+3}" style="background:#${bg};color:#${col};border-left:4px solid #${col}">${cat}</td></tr>`;
+    html+=`<tr class="cat-row" data-cat="${cat}"><td colspan="${dates.length+3}" style="background:#${bg};color:#${col};border-left:4px solid #${col}">${cat}</td></tr>`;
     ct.forEach((t,ti)=>{
       const idx=tasks.indexOf(t);
       const taskDates=new Set(t.dates||[]);
       const even=ti%2===0;
       const rb=even?'#fff':'#fcfcfe';
-      html+=`<tr class="task-row"><td class="t-act" style="background:${rb}" onclick="openEdit(${idx})" title="Click to edit">✏ ${t.task}</td><td class="t-own" style="background:${rb}">${t.owner||''}</td>`;
+      html+=`<tr class="task-row" draggable="true" data-idx="${idx}" data-cat="${cat}">
+        <td class="t-act" style="background:${rb}">
+          <span class="drag-handle" title="Drag to reorder">⠿</span><span onclick="openEdit(${idx})" style="cursor:pointer" title="Click to edit">${t.task}</span>
+        </td>
+        <td class="t-own" style="background:${rb}">${t.owner||''}</td>`;
       dates.forEach(d=>{
-        const wk=d.getDay()===5||d.getDay()===6,fd=fmt(d),inR=taskDates.has(fd),tod=fd===TODAY;
+        const wk=d.getDay()===5||d.getDay()===6,fd=fmt(d),inR=taskDates.has(fd),tod=fd===TODAY,launch=fd===LAUNCH;
         let cell='';
         if(inR){cell=`<span class="dot" style="background:#${col};opacity:.9"></span>`;}
-        html+=`<td class="t-day${wk&&!inR?' weekend':''}${tod?' today-d':''}" style="${wk&&!inR?'background:#fafafa':''}">${cell}</td>`;
+        html+=`<td class="t-day${wk&&!inR?' weekend':''}${tod?' today-d':''}${launch?' launch-d':''}" style="${wk&&!inR?'background:#fafafa':''}">${cell}</td>`;
       });
       html+=`<td class="t-del"><button class="btn-del" onclick="delTask(${idx})">✕</button></td></tr>`;
     });
@@ -336,6 +353,39 @@ function render(){
   let leg='';
   CAT_ORDER.forEach(c=>{if(tasks.some(t=>t.cat===c))leg+=`<div class="leg-item"><div class="leg-dot" style="background:#${CAT_COLORS[c]}"></div>${c}</div>`;});
   document.getElementById('legend').innerHTML=leg;
+  initDrag();
+}
+
+let dragSrcIdx=null;
+function initDrag(){
+  document.querySelectorAll('.task-row[draggable]').forEach(row=>{
+    row.addEventListener('dragstart',e=>{
+      dragSrcIdx=parseInt(row.dataset.idx);
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+    });
+    row.addEventListener('dragend',()=>{
+      document.querySelectorAll('.task-row').forEach(r=>r.classList.remove('dragging','drag-over'));
+    });
+    row.addEventListener('dragover',e=>{
+      e.preventDefault();
+      if(parseInt(row.dataset.idx)===dragSrcIdx)return;
+      document.querySelectorAll('.task-row').forEach(r=>r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('drop',e=>{
+      e.preventDefault();
+      const targetIdx=parseInt(row.dataset.idx);
+      if(dragSrcIdx===null||dragSrcIdx===targetIdx)return;
+      const srcCat=tasks[dragSrcIdx].cat,tgtCat=tasks[targetIdx].cat;
+      if(srcCat!==tgtCat)return;
+      const item=tasks.splice(dragSrcIdx,1)[0];
+      const newTarget=tasks.indexOf(tasks.find((_,i)=>i===(targetIdx>dragSrcIdx?targetIdx-1:targetIdx)));
+      tasks.splice(targetIdx>dragSrcIdx?targetIdx-1:targetIdx,0,item);
+      dragSrcIdx=null;
+      save();render();
+    });
+  });
 }
 
 function addTask(){
