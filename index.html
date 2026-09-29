@@ -1,552 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KDR Racing Game - Marketing Campaign Timeline</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:13px;background:#f5f6fa;color:#1a1a2e;padding:20px}
-.header{margin-bottom:12px}
-.header h2{font-size:17px;font-weight:700;color:#1a1a2e;letter-spacing:.3px}
-.launch-badge{display:inline-flex;align-items:center;gap:8px;margin-top:8px;background:#fff;border:1.5px solid #e74c3c;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:#e74c3c;box-shadow:0 0 0 0 rgba(231,76,60,.4);animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,76,60,.4)}70%{box-shadow:0 0 0 8px rgba(231,76,60,0)}100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}}
-.launch-dot{width:7px;height:7px;border-radius:50%;background:#e74c3c;animation:blink 1.2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.controls{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;box-shadow:0 1px 4px rgba(0,0,0,.07)}
-.field-group{display:flex;flex-direction:column;gap:3px}
-.field-label{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
-.controls input,.controls select{border:1.5px solid #e8e8f0;border-radius:8px;padding:6px 10px;font-size:12px;color:#1a1a2e;background:#fafafa;outline:none;transition:border .15s}
-.controls input:focus,.controls select:focus{border-color:#6c63ff}
-.controls input[type=text]{width:200px}
-.controls select{width:190px}
-.btn-add{background:#6c63ff;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer}
-.btn-add:hover{background:#5a52d5}
-.dates-input{display:flex;flex-direction:column;gap:3px}
-.dates-tags{display:flex;flex-wrap:wrap;gap:4px;min-width:200px;max-width:300px;border:1.5px solid #e8e8f0;border-radius:8px;padding:4px 8px;background:#fafafa;min-height:34px;align-items:center}
-.date-tag{background:#6c63ff;color:#fff;border-radius:6px;padding:2px 7px;font-size:11px;display:flex;align-items:center;gap:4px}
-.date-tag span{cursor:pointer;opacity:.7}
-.date-tag span:hover{opacity:1}
-.date-add-row{display:flex;gap:6px;align-items:center}
-.date-add-row input[type=date]{width:138px}
-.mini-cal-wrap{display:none}
-.cal-popup-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:rgba(0,0,0,.25)}
-.cal-popup-overlay.open{display:flex;align-items:center;justify-content:center}
-.cal-popup{background:#fff;border-radius:14px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,.18);width:260px}
-.cal-popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.cal-popup-header h4{font-size:13px;font-weight:700;color:#1a1a2e}
-.cal-popup-close{background:none;border:none;cursor:pointer;font-size:18px;color:#aaa;line-height:1}
-.cal-popup-close:hover{color:#e74c3c}
-.cal-popup-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
-.btn-cal-done{background:#6c63ff;color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer}
-.btn-cal-clear{background:none;border:none;font-size:11px;color:#aaa;cursor:pointer}
-.btn-cal-clear:hover{color:#e74c3c}
-.mini-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.mini-cal-nav button{background:none;border:none;cursor:pointer;font-size:16px;color:#666;padding:2px 6px;border-radius:4px}
-.mini-cal-nav button:hover{background:#e8e8f0}
-.mini-cal-nav span{font-size:11px;font-weight:700;color:#1a1a2e}
-.mini-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-dow{font-size:9px;font-weight:700;color:#aaa;text-align:center;padding:2px 0}
-.cal-day{font-size:11px;text-align:center;padding:4px 2px;border-radius:4px;cursor:pointer;color:#333;transition:background .1s}
-.cal-day:hover{background:#e8e8f0}
-.cal-day.selected{background:#6c63ff;color:#fff;font-weight:700}
-.cal-day.today{border:1.5px solid #6c63ff;color:#6c63ff}
-.cal-day.today.selected{border-color:transparent}
-.cal-day.weekend{color:#ccc}
-.cal-day.empty{cursor:default}
-.cal-day.empty:hover{background:none}
-.btn-clear-dates{background:none;border:none;font-size:10px;color:#aaa;cursor:pointer;margin-top:4px;padding:0}
-.btn-clear-dates:hover{color:#e74c3c}
-.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-.filter-btn{border:1.5px solid #e8e8f0;background:#fff;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:#666;cursor:pointer}
-.filter-btn.active{background:#6c63ff;border-color:#6c63ff;color:#fff}
-.btn-reset{border:1.5px solid #e8e8f0;background:#fff;border-radius:8px;padding:5px 12px;font-size:11px;color:#888;cursor:pointer;margin-left:auto}
-.gantt-card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden}
-.gantt-wrap{overflow:auto;max-height:70vh}
-table{border-collapse:collapse;width:100%}
-thead{position:sticky;top:0;z-index:10}
-.h-month{background:#f0f1f8;font-size:10px;font-weight:700;color:#555;text-align:center;padding:5px 4px;border-bottom:1px solid #e8e8f0;letter-spacing:.5px}
-.h-day{font-size:10px;font-weight:600;color:#888;text-align:center;padding:5px 2px;border-bottom:2px solid #e8e8f0;min-width:26px;width:26px;background:#f9f9fc}
-.h-day.weekend{color:#ccc;background:#fafafa}
-.h-day.today-h{background:#6c63ff;color:#fff;border-radius:4px}
-.h-day.launch-h{background:#e74c3c!important;color:#fff!important;border-radius:4px;font-weight:800}
-.h-act{text-align:left;padding:6px 14px;font-size:11px;font-weight:700;color:#555;background:#f9f9fc;border-bottom:2px solid #e8e8f0;min-width:260px;position:sticky;left:0;z-index:11}
-.h-own{text-align:center;padding:6px 8px;font-size:11px;font-weight:700;color:#555;background:#f9f9fc;border-bottom:2px solid #e8e8f0;min-width:100px;position:sticky;left:200px;z-index:11}
-.h-del{background:#f9f9fc;border-bottom:2px solid #e8e8f0;width:60px}
-.cat-row td{padding:6px 14px;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;border-top:1px solid #e8e8f0}
-.task-row td{border-bottom:1px solid #f0f0f8;padding:5px 2px}
-.task-row:hover td{background:#f9f9fc!important}
-.task-row.dragging{opacity:.4}
-.task-row.drag-over td{border-top:2px solid #6c63ff}
-td.t-act{padding:5px 6px 5px 14px;font-size:12px;color:#2d2d44;background:#fff;position:sticky;left:0;z-index:1;cursor:grab;white-space:nowrap;min-width:260px;display:table-cell}
-td.t-act:active{cursor:grabbing}
-.drag-handle{color:#ccc;font-size:12px;margin-right:4px;cursor:grab}
-td.t-own{text-align:center;font-size:11px;color:#999;background:#fff;padding:5px 8px;white-space:nowrap;position:sticky;left:200px;z-index:1}
-td.t-day{min-width:26px;width:26px;padding:3px 2px}
-td.t-day.weekend{background:#fafafa}
-td.t-day.launch-d{border-left:2px solid #e74c3c;border-right:1px solid #fbbbb5}
-td.t-day.today-d{border-left:2px solid #6c63ff}
-td.t-day.dot-hover{background:#e8e8f8!important}
-td.t-day.dot-hover .dot{transform:scale(1.2)}
-.h-day.col-hover{background:#6c63ff!important;color:#fff!important;border-radius:4px}
-td.t-del{text-align:center;background:#fff;padding:4px}
-.dot{width:18px;height:18px;border-radius:50%;display:block;margin:auto}
-.btn-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px}
-.btn-del:hover{color:#e74c3c;background:#fff5f5}
-.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;padding:0 4px}
-.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#888}
-.leg-dot{width:10px;height:10px;border-radius:5px;flex-shrink:0}
-.status-bar{font-size:10px;color:#aaa;margin-top:8px;text-align:right}
-.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:14px;padding:24px;width:420px;box-shadow:0 8px 32px rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
-.modal h3{font-size:14px;font-weight:700;margin-bottom:16px;color:#1a1a2e}
-.modal .field-group{margin-bottom:12px}
-.modal input[type=text],.modal select{width:100%;border:1.5px solid #e8e8f0;border-radius:8px;padding:7px 10px;font-size:12px;color:#1a1a2e;background:#fafafa;outline:none}
-.modal input:focus,.modal select:focus{border-color:#6c63ff}
-.modal-btns{display:flex;gap:10px;margin-top:16px}
-.btn-save{flex:1;background:#6c63ff;color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer}
-.btn-cancel{flex:1;background:#f5f5f5;color:#555;border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer}
-</style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Tracked"/>
+<meta name="theme-color" content="#F3F4F9"/>
+<title>Tracked</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-180.png"/>
+<link rel="icon" href="favicon.png"/>
+<link rel="shortcut icon" href="favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-<div class="header">
-  <h2>KDR Racing Game - Marketing Campaign Timeline</h2>
-  <div class="launch-badge"><span class="launch-dot"></span>Launch Day — August 12, 2026</div>
-</div>
+<!-- LOADING SCREEN -->
+<div id="loadingScreen" style="
+  position:fixed;inset:0;z-index:9999;
+  background:#0A0B0F;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity 500ms ease, transform 500ms ease;
+">
+  <style>
+    @keyframes pulse-ring {
+      0%{transform:scale(0.8);opacity:0.8}
+      50%{transform:scale(1.15);opacity:0.3}
+      100%{transform:scale(0.8);opacity:0.8}
+    }
+    @keyframes spin-slow {
+      from{transform:rotate(0deg)} to{transform:rotate(360deg)}
+    }
+    @keyframes spin-reverse {
+      from{transform:rotate(360deg)} to{transform:rotate(0deg)}
+    }
+    @keyframes float-up {
+      0%{transform:translateY(0px)} 50%{transform:translateY(-10px)} 100%{transform:translateY(0px)}
+    }
+    @keyframes bar-fill {
+      0%{width:0%} 100%{width:100%}
+    }
+    @keyframes flicker {
+      0%,100%{opacity:1} 50%{opacity:0.4}
+    }
+    @keyframes fade-in-up {
+      from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}
+    }
+    .loading-ring-1 {
+      position:absolute;width:160px;height:160px;border-radius:50%;
+      border:1.5px solid rgba(22,168,99,0.15);
+      animation:pulse-ring 2.4s ease-in-out infinite;
+    }
+    .loading-ring-2 {
+      position:absolute;width:120px;height:120px;border-radius:50%;
+      border:1px dashed rgba(22,168,99,0.25);
+      animation:spin-slow 8s linear infinite;
+    }
+    .loading-ring-3 {
+      position:absolute;width:90px;height:90px;border-radius:50%;
+      border:1px dashed rgba(55,138,221,0.2);
+      animation:spin-reverse 6s linear infinite;
+    }
+    .loading-dot {
+      position:absolute;width:4px;height:4px;border-radius:50%;background:#16A863;
+      box-shadow:0 0 8px rgba(22,168,99,0.8);
+      animation:flicker 1.5s ease-in-out infinite;
+    }
+  </style>
 
-<div class="controls">
-  <div class="field-group"><div class="field-label">Activity</div><input type="text" id="inp-task" placeholder="Activity name"/></div>
-  <div class="field-group"><div class="field-label">Owner</div>
-    <select id="inp-owner" style="width:130px" onchange="handleOwnerChange('inp-owner')">
-      <option value="">Select owner</option>
-    </select>
+  <!-- Animated rings -->
+  <div style="position:relative;width:160px;height:160px;display:flex;align-items:center;justify-content:center;margin-bottom:40px;animation:float-up 3s ease-in-out infinite;">
+    <div class="loading-ring-1"></div>
+    <div class="loading-ring-2">
+      <!-- Dot on spinning ring -->
+      <div class="loading-dot" style="position:absolute;top:-2px;left:50%;transform:translateX(-50%);animation-delay:0s;"></div>
+    </div>
+    <div class="loading-ring-3">
+      <div class="loading-dot" style="position:absolute;top:-2px;left:50%;transform:translateX(-50%);background:#378ADD;box-shadow:0 0 8px rgba(55,138,221,0.8);animation-delay:0.3s;"></div>
+    </div>
+    <!-- Logo in center -->
+    <div style="width:56px;height:56px;border-radius:16px;overflow:hidden;background:#12141A;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(22,168,99,0.2);">
+      <img src="icon-180.png" style="width:48px;height:48px;object-fit:contain;"/>
+    </div>
   </div>
-  <div class="field-group"><div class="field-label">Category</div>
-    <select id="inp-cat" onchange="handleCatChange('inp-cat')">
-    </select>
+
+  <!-- App name -->
+  <div style="animation:fade-in-up 600ms ease both;animation-delay:200ms;">
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:#fff;letter-spacing:0.08em;text-align:center;">TRACKED</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.2em;text-align:center;margin-top:4px;">FOOD & MACROS</div>
   </div>
-  <div class="field-group dates-input">
-    <div class="field-label">Dates <span id="inp-dates-count" style="color:#6c63ff;font-weight:700"></span></div>
-    <button class="btn-date-add" onclick="openCal('inp')">Select dates</button>
-    <div class="dates-tags" id="inp-dates-tags" style="margin-top:6px;max-width:280px"></div>
+
+  <!-- Progress bar -->
+  <div style="margin-top:48px;width:160px;animation:fade-in-up 600ms ease both;animation-delay:400ms;">
+    <div style="height:2px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
+      <div id="loadingBar" style="height:100%;width:0%;background:linear-gradient(90deg,#16A863,#378ADD);border-radius:2px;transition:width 300ms ease;"></div>
+    </div>
+    <div id="loadingLabel" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.25);margin-top:8px;text-align:center;letter-spacing:0.1em;">INITIALIZING</div>
   </div>
-  <div class="field-group"><div class="field-label">&nbsp;</div><button class="btn-add" onclick="addTask()">+ Add task</button></div>
+
+  <!-- Scan line -->
+  <div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(22,168,99,0.3),transparent);animation:scan 3s ease-in-out infinite;pointer-events:none;"></div>
 </div>
 
-<div class="toolbar">
-  <button class="filter-btn active" onclick="setFilter('all',this)">All dates</button>
-  <button class="filter-btn" onclick="setFilter('active',this)">Active dates only</button>
-  <button class="filter-btn" onclick="setFilter('upcoming',this)">Upcoming only</button>
-  <button class="btn-reset" onclick="resetToDefault()">↺ Reset to default</button>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- DESKTOP SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-wordmark" style="display:flex;align-items:center;gap:10px;">
+    <img src="logo.png" alt="Tracked" style="width:36px;height:36px;object-fit:contain;"/>
+    <div>TRACKED<span style="display:block;font-size:11px;color:var(--text-faint);letter-spacing:0.12em;margin-top:2px;font-family:'JetBrains Mono',monospace;font-weight:500;">FOOD & MACROS</span></div>
+  </div>
+  <div class="sidebar-rail-label">Menu</div>
+  <nav class="sidebar-nav">
+    <button class="sidebar-item active" data-tab="home" onclick="window.showTab('home',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Home</button>
+    <button class="sidebar-item" data-tab="log" onclick="window.showTab('log',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>Log Meal</button>
+    <button class="sidebar-item" data-tab="trends" onclick="window.showTab('trends',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18l5-5 4 4 5-6 4 3"/></svg>Trends</button>
+    <button class="sidebar-item" data-tab="settings" onclick="window.showTab('settings',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 014.93 19.07M4.93 4.93a10 10 0 1014.14 14.14"/></svg>Settings</button>
+  </nav>
+</aside>
+
+<div class="main" id="mainScroll">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="page-header mobile-only-header" style="text-align:center;padding-top:16px;padding-bottom:4px;">
+      <img src="icon-180.png" alt="Tracked" style="width:48px;height:48px;object-fit:contain;border-radius:12px;margin-bottom:6px;"/>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.01em;">TRACKED</div>
+    </div>
+
+    <!-- Month strip -->
+    <div class="month-strip" id="monthStrip"></div>
+
+    <!-- Day nav -->
+    <div class="day-nav">
+      <button class="day-nav-btn" onclick="window.changeDay(-1)">‹</button>
+      <div class="day-nav-center">
+        <div class="day-nav-label" id="dayNavLabel">Today</div>
+        <div class="day-nav-sub" id="dayNavSub"></div>
+      </div>
+      <button class="day-nav-btn" id="dayNavNext" onclick="window.changeDay(1)">›</button>
+    </div>
+
+    <!-- Body hero -->
+    <div class="body-hero" style="margin-top:12px;">
+      <div class="scan-line"></div>
+      <div class="body-hero-top">
+        <div class="body-hero-label">Body Status</div>
+        <div class="body-hero-cal" id="heroCalLabel">0 / 2865 kcal</div>
+      </div>
+      <div class="body-canvas-wrap">
+        <canvas id="bodyCanvas" width="200" height="220"></canvas>
+        <div class="body-status-tag" id="bodyStatusTag">LOADING...</div>
+      </div>
+    </div>
+
+    <!-- Goal banner -->
+    <div id="goalBanner" style="display:none" class="goal-banner">
+      <div class="goal-banner-text">Goal hit! Great work today.</div>
+    </div>
+
+    <!-- Macro grid -->
+    <div class="macro-grid">
+      <div class="macro-card"><div class="macro-label">Calories</div><div class="macro-val" id="mCal">0</div><div class="macro-target" id="mCalTarget">/ 2865</div><div class="macro-bar"><div class="macro-fill fill-cal" id="mCalBar" style="width:0%"></div></div></div>
+      <div class="macro-card"><div class="macro-label">Protein</div><div class="macro-val" id="mProt">0<span>g</span></div><div class="macro-target" id="mProtTarget">/ 183g</div><div class="macro-bar"><div class="macro-fill fill-prot" id="mProtBar" style="width:0%"></div></div></div>
+      <div class="macro-card"><div class="macro-label">Carbs</div><div class="macro-val" id="mCarb">0<span>g</span></div><div class="macro-target" id="mCarbTarget">/ 300g</div><div class="macro-bar"><div class="macro-fill fill-carb" id="mCarbBar" style="width:0%"></div></div></div>
+      <div class="macro-card"><div class="macro-label">Fats</div><div class="macro-val" id="mFat">0<span>g</span></div><div class="macro-target" id="mFatTarget">/ 80g</div><div class="macro-bar"><div class="macro-fill fill-fat" id="mFatBar" style="width:0%"></div></div></div>
+    </div>
+
+    <div class="glow-line"></div>
+
+    <!-- Carryover -->
+    <div id="carryoverBanner" style="display:none"><div class="carryover-banner"><div class="carryover-text" id="carryoverText"></div></div></div>
+
+    <!-- Meals -->
+    <div class="section-head">
+      <div class="section-title">Meals</div>
+      <button class="section-add" onclick="window.showTab('log',document.querySelector('[data-tab=log]'))">+</button>
+    </div>
+    <div id="mealsContainer"></div>
+
+    <!-- Water -->
+    <div class="water-card">
+      <div class="water-head"><div class="water-title">Water</div><div class="water-val" id="waterVal">0 / 8 × 300ml</div></div>
+      <div class="water-dots" id="waterDots"></div>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="screen" id="screen-log">
+    <div class="page-header">
+      <div class="page-eyebrow">ADD FOOD</div>
+      <div class="page-title">Log Meal</div>
+    </div>
+    <div class="log-search-bar">
+      <select id="logCat" class="log-cat-select">
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="dinner">Dinner</option>
+        <option value="snacks">Snacks</option>
+        <option value="drinks">Drinks</option>
+      </select>
+      <input class="log-search-input" id="searchInput" type="text" placeholder="Search your foods..." autocomplete="off" oninput="window.searchLocalFoods(this.value)"/>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+
+    <div class="log-tabs" style="margin-top:8px;">
+      <button class="log-tab active" onclick="window.switchLogTab('recent')">Recent</button>
+      <button class="log-tab" onclick="window.switchLogTab('myfoods')">My Foods</button>
+      <button class="log-tab" onclick="window.switchLogTab('manual')">Manual</button>
+      <button class="log-tab" onclick="window.switchLogTab('scan')">AI Scan</button>
+    </div>
+
+    <div id="logTabRecent"><div class="foods-list" id="recentList"></div></div>
+
+    <div id="logTabMyfoods" style="display:none;">
+      <div style="padding:10px 20px 0;display:flex;justify-content:flex-end;">
+        <button onclick="window.openCreateFoodModal()" style="background:var(--accent);color:#fff;border:none;border-radius:12px;padding:9px 14px;font-size:13px;font-weight:700;font-family:'Manrope',sans-serif;transition:transform 200ms cubic-bezier(0.34,1.56,0.64,1);">+ Create Food</button>
+      </div>
+      <div class="foods-list" id="myFoodsList"></div>
+    </div>
+
+    <div id="logTabManual" style="display:none;padding:14px 20px;">
+      <label>Category</label>
+      <select id="manualCat" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;">
+        <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snacks">Snacks</option><option value="drinks">Drinks</option>
+      </select>
+      <label>Meal name</label>
+      <input type="text" id="manualName" placeholder="e.g. Grilled salmon" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;"/>
+      <label>Brand / Source (optional)</label>
+      <input type="text" id="manualSource" placeholder="e.g. Homemade, McDonald's, Nada..." style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div><label>Calories</label><input type="number" id="manualCal" placeholder="0" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+        <div><label>Protein (g)</label><input type="number" id="manualProt" placeholder="0" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+        <div><label>Carbs (g)</label><input type="number" id="manualCarb" placeholder="0" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+        <div><label>Fats (g)</label><input type="number" id="manualFat" placeholder="0" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+      </div>
+      <button class="settings-save" style="margin-bottom:10px;" onclick="window.saveManualMeal()">Add to Today</button>
+      <button class="modal-btn modal-btn-cancel" style="width:100%;" onclick="window.resetManual()">Clear Fields</button>
+    </div>
+
+    <div id="logTabScan" style="display:none;padding:14px 20px;">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:14px;font-weight:600;">Add photos and/or describe your meal. At least one is required.</p>
+      <label>Photos (up to 4)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        <label for="scanImageInputLog" class="scan-upload-box" style="width:72px;height:72px;min-height:unset;padding:0;flex-direction:column;">
+          <input type="file" id="scanImageInputLog" accept="image/*" multiple style="display:none;" onchange="window.handleScanImages(this)"/>
+          <div style="font-size:11px;font-weight:700;color:var(--text-faint);">+ Photo</div>
+        </label>
+        <div id="scanThumbnails" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;"></div>
+      </div>
+      <label>Description</label>
+      <textarea id="scanDescLog" placeholder="e.g. 200g grilled chicken with olive oil, 100g broccoli..." style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;resize:none;min-height:72px;"></textarea>
+      <label>Category</label>
+      <select id="scanCatLog" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:14px;outline:none;">
+        <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snacks">Snacks</option><option value="drinks">Drinks</option>
+      </select>
+      <button class="settings-save" style="margin:0 0 12px;" onclick="window.analyzeMealLog()">Analyze with AI</button>
+      <div class="scan-status" id="scanStatusLog"></div>
+      <div class="scan-result" id="scanResultLog" style="display:none;">
+        <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px;">AI Estimate — edit if needed</div>
+        <label>Meal name</label><input type="text" id="scanEditName" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:10px;outline:none;"/>
+        <label>Brand / Source (optional)</label><input type="text" id="scanEditSource" placeholder="e.g. Homemade, Nada, McDonald's..." style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:10px;outline:none;"/>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div><label>Calories</label><input type="number" id="scanEditCal" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+          <div><label>Protein (g)</label><input type="number" id="scanEditProt" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div><label>Carbs (g)</label><input type="number" id="scanEditCarb" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+          <div><label>Fats (g)</label><input type="number" id="scanEditFat" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+        </div>
+        <div id="scanBreakdownLog" style="margin-bottom:12px;display:none;">
+          <div style="font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Breakdown</div>
+          <div id="scanBreakdownItems"></div>
+        </div>
+        <div id="scanResultNotesLog" style="font-size:11px;color:var(--text-dim);margin-bottom:12px;"></div>
+        <label>Feedback / Correction</label>
+        <textarea id="scanFeedback" placeholder="e.g. Actually looks more like 200g, not 350g. Also has extra cheese." style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:13px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:10px;outline:none;resize:none;min-height:60px;"></textarea>
+        <button class="modal-btn modal-btn-cancel" style="width:100%;margin-bottom:10px;" onclick="window.reanalyzeMeal()">Re-analyze with feedback</button>
+        <button class="settings-save" style="margin:0 0 10px;" onclick="window.addScannedMealLog()">Add to Today</button>
+        <button class="modal-btn modal-btn-cancel" style="width:100%;" onclick="window.resetScan()">Clear & Scan Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRENDS -->
+  <div class="screen" id="screen-trends">
+    <div class="page-header"><div class="page-eyebrow">7-DAY VIEW</div><div class="page-title">Trends</div></div>
+    <div class="trends-wrap">
+      <div class="chart-card"><div class="chart-title">Calories</div><div class="chart-sub">Daily intake vs target · green = hit</div><div class="bar-chart" id="calChart"></div></div>
+      <div class="chart-card"><div class="chart-title">Protein</div><div class="chart-sub">Daily grams vs target</div><div class="bar-chart" id="protChart"></div></div>
+      <div class="chart-card"><div class="chart-title">Water</div><div class="chart-sub">Glasses per day vs goal</div><div class="bar-chart" id="waterChart"></div></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="screen-settings">
+    <div class="page-header"><div class="page-eyebrow">TRACKED</div><div class="page-title">Settings</div></div>
+    <div class="settings-wrap">
+      <div class="settings-section">
+        <div class="settings-section-title">Daily Macro Targets</div>
+        <div class="settings-row"><div><div class="settings-row-label">Calories</div><div class="settings-row-sub">kcal per day</div></div><input class="settings-input" id="setCal" type="number" value="2865"/></div>
+        <div class="settings-row"><div><div class="settings-row-label">Protein</div><div class="settings-row-sub">grams per day</div></div><input class="settings-input" id="setProt" type="number" value="183"/></div>
+        <div class="settings-row"><div><div class="settings-row-label">Carbs</div><div class="settings-row-sub">grams per day</div></div><input class="settings-input" id="setCarb" type="number" value="300"/></div>
+        <div class="settings-row"><div><div class="settings-row-label">Fats</div><div class="settings-row-sub">grams per day</div></div><input class="settings-input" id="setFat" type="number" value="80"/></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Water Goal</div>
+        <div class="settings-row"><div><div class="settings-row-label">Daily glasses</div><div class="settings-row-sub">1 unit = 300ml</div></div><input class="settings-input" id="setWater" type="number" value="8"/></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Carryover</div>
+        <div class="settings-row"><div><div class="settings-row-label">Carry missed calories</div><div class="settings-row-sub">Add yesterday's deficit to today's target</div></div><input type="checkbox" id="setCarryover" style="width:20px;height:20px;accent-color:var(--accent);"/></div>
+      </div>
+    </div>
+    <button class="settings-save" onclick="window.saveSettings()">Save Settings</button>
+  </div>
+
 </div>
 
-<div class="gantt-card">
-  <div class="gantt-wrap" id="gantt-wrap"></div>
+<!-- LIQUID GLASS TAB BAR -->
+<div class="tab-bar">
+  <div class="tab-pill" id="tabPill"></div>
+  <button class="tab-btn active" data-tab="home" onclick="window.showTab('home',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Home
+  </button>
+  <button class="tab-btn" data-tab="log" onclick="window.showTab('log',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Log
+  </button>
+  <button class="tab-btn" data-tab="trends" onclick="window.showTab('trends',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 18l5-5 4 4 5-6 4 3"/></svg>Trends
+  </button>
+  <button class="tab-btn" data-tab="settings" onclick="window.showTab('settings',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 014.93 19.07M4.93 4.93a10 10 0 1014.14 14.14"/></svg>Settings
+  </button>
 </div>
 
-<div class="legend" id="legend"></div>
-<div class="status-bar" id="status"></div>
-
-<div class="modal-overlay" id="modal">
+<!-- FOOD DETAIL MODAL -->
+<div class="modal-overlay" id="foodDetailModal">
   <div class="modal">
-    <h3>Edit task</h3>
-    <div class="field-group"><div class="field-label">Activity</div><input type="text" id="ed-task"/></div>
-    <div class="field-group"><div class="field-label">Owner</div>
-      <select id="ed-owner" onchange="handleOwnerChange('ed-owner')"></select>
-    </div>
-    <div class="field-group"><div class="field-label">Category</div>
-      <select id="ed-cat" onchange="handleCatChange('ed-cat')"></select>
-    </div>
-    <div class="field-group dates-input">
-      <div class="field-label">Dates <span id="ed-dates-count" style="color:#6c63ff;font-weight:700"></span></div>
-      <button class="btn-date-add" onclick="openCal('ed')">Select dates</button>
-      <div class="dates-tags" id="ed-dates-tags" style="margin-top:6px"></div>
-    </div>
-    <div class="modal-btns">
-      <button class="btn-save" onclick="saveEdit()">Save</button>
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="fdName"></div>
+    <div class="fd-macros-row" id="fdMacros"></div>
+    <label>Servings</label>
+    <input type="number" id="fdMultiplier" value="1" step="0.1" min="0.1" oninput="window.updateFoodDetail()" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;" placeholder="e.g. 1, 1.5, 2"/>
+    <label>Category</label>
+    <select id="fdCat" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:14px;outline:none;">
+      <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snacks">Snacks</option><option value="drinks">Drinks</option>
+    </select>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="window.closeModal('foodDetailModal')">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="window.addFoodFromDetail()">Add to Today</button>
     </div>
   </div>
 </div>
 
-<div class="cal-popup-overlay" id="cal-popup-overlay" onclick="handleCalOverlayClick(event)">
-  <div class="cal-popup">
-    <div class="cal-popup-header">
-      <h4 id="cal-popup-title">Select dates</h4>
-      <button class="cal-popup-close" onclick="closeCal()">×</button>
+<!-- EDIT MEAL MODAL -->
+<div class="modal-overlay" id="editMealModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Meal</div>
+    <div class="edit-meal-name" id="editMealName"></div>
+    <div class="edit-meal-macros" id="editMealMacros"></div>
+    <div id="editMealBreakdown" style="display:none;background:var(--bg);border-radius:12px;padding:10px 12px;margin-bottom:12px;"></div>
+    <label>Servings</label>
+    <input type="number" id="editMealServing" value="1" step="0.1" min="0.1" oninput="window.updateEditMacros()" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;" placeholder="e.g. 1, 1.5, 2"/>
+    <div class="edit-preview" id="editMealPreview"></div>
+    <label>Move to category</label>
+    <select id="editMealCat" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:14px;outline:none;">
+      <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snacks">Snacks</option><option value="drinks">Drinks</option>
+    </select>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="window.closeModal('editMealModal')">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="window.saveEditMeal()">Save</button>
     </div>
-    <div class="mini-cal-nav">
-      <button onclick="calNav('_active',-1)">&#8249;</button>
-      <span id="_active-cal-label"></span>
-      <button onclick="calNav('_active',1)">&#8250;</button>
-    </div>
-    <div class="mini-cal-grid" id="_active-cal-grid" style="margin-top:8px"></div>
-    <div class="cal-popup-actions">
-      <button class="btn-cal-clear" onclick="clearCalDates()">Clear all</button>
-      <button class="btn-cal-done" onclick="closeCal()">Done</button>
-    </div>
-    <div class="dates-tags" id="_active-dates-tags" style="margin-top:10px;max-width:220px"></div>
   </div>
 </div>
 
+<!-- LOG MODAL -->
+<div class="modal-overlay" id="logModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Search Food</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input type="text" id="logModalSearch" placeholder="chicken breast..." style="flex:1;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;" autocomplete="off"/>
+      <button style="background:var(--accent);color:#fff;border:none;border-radius:12px;padding:0 14px;font-weight:700;font-size:13px;" onclick="window.doModalSearch()">Go</button>
+    </div>
+    <div id="logModalResults" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:12px;"></div>
+    <button class="modal-btn modal-btn-cancel" style="width:100%;" onclick="window.closeModal('logModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- CREATE FOOD MODAL -->
+<div class="modal-overlay" id="createFoodModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="createFoodModalTitle">Create Food</div>
+    <label>Name</label><input type="text" id="cfName" placeholder="e.g. Nada protein milk" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;"/>
+    <label>Brand / Source (optional)</label><input type="text" id="cfSource" placeholder="e.g. Nada, Homemade..." style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;"/>
+    <label>Serving size (g)</label><input type="number" id="cfServing" placeholder="100" style="width:100%;border:1px solid var(--card-border);border-radius:12px;padding:11px 14px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);margin-bottom:12px;outline:none;"/>
+    <div class="modal-grid">
+      <div><label>Calories</label><input type="number" id="cfCal" placeholder="0" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+      <div><label>Protein (g)</label><input type="number" id="cfProt" placeholder="0" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+    </div>
+    <div class="modal-grid">
+      <div><label>Carbs (g)</label><input type="number" id="cfCarb" placeholder="0" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+      <div><label>Fats (g)</label><input type="number" id="cfFat" placeholder="0" style="width:100%;border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;background:var(--card);color:var(--text);outline:none;"/></div>
+    </div>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="modal-btn modal-btn-cancel" onclick="window.closeModal('createFoodModal')">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="window.saveCustomFood()">Save Food</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
 <script>
-const CAT_COLORS={"Pre-Launch Content":"4A90D9","Teaser Phase":"F5A623","Launch":"E74C3C","Brand Collaborations":"27AE60","Influencers":"9B59B6","Bahrain Sports City":"E67E22","Competition & Leaderboard":"2980B9","UGC":"16A085","Email / CRM":"D35400","Post-Campaign":"95A5A6"};
-const CAT_BG={"Pre-Launch Content":"EBF5FB","Teaser Phase":"FEF9E7","Launch":"FDEDEC","Brand Collaborations":"EAFAF1","Influencers":"F5EEF8","Bahrain Sports City":"FEF5E7","Competition & Leaderboard":"EBF5FB","UGC":"E8F8F5","Email / CRM":"FDF2E9","Post-Campaign":"F2F3F4"};
-const CAT_ORDER=Object.keys(CAT_COLORS);
-let owners=['Yasir','Design Team','Videography','Digital Solutions','Corporate Comms','CRM','KDR Channel'];
-
-function populateSelects(){
-  ['inp-owner','ed-owner'].forEach(id=>{
-    const sel=document.getElementById(id);if(!sel)return;
-    const cur=sel.value;
-    sel.innerHTML='<option value="">Select owner</option>'+owners.map(o=>`<option value="${o}">${o}</option>`).join('')+'<option value="__new__">+ Add new owner</option>';
-    if(cur&&cur!=='__new__')sel.value=cur;
-  });
-  ['inp-cat','ed-cat'].forEach(id=>{
-    const sel=document.getElementById(id);if(!sel)return;
-    const cur=sel.value;
-    sel.innerHTML=CAT_ORDER.map(c=>`<option value="${c}">${c}</option>`).join('')+'<option value="__new__">+ Add new category</option>';
-    if(cur&&cur!=='__new__')sel.value=cur;
-  });
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js'));
 }
-
-function handleOwnerChange(selId){
-  const sel=document.getElementById(selId);
-  if(sel.value!=='__new__')return;
-  const name=(prompt('New owner name:')||'').trim();
-  if(name&&!owners.includes(name)){owners.push(name);saveOwners();populateSelects();}
-  sel.value=name&&owners.includes(name)?name:'';
-}
-
-function handleCatChange(selId){
-  const sel=document.getElementById(selId);
-  if(sel.value!=='__new__')return;
-  const name=(prompt('New category name:')||'').trim();
-  if(name&&!CAT_ORDER.includes(name)){
-    CAT_ORDER.push(name);CAT_COLORS[name]='888888';CAT_BG[name]='F5F5F5';
-    saveCats();populateSelects();render();
-  }
-  sel.value=name&&CAT_ORDER.includes(name)?name:CAT_ORDER[0];
-}
-
-function saveOwners(){try{localStorage.setItem('kdr-owners',JSON.stringify(owners));}catch(e){}}
-function saveCats(){try{localStorage.setItem('kdr-cats',JSON.stringify({order:[...CAT_ORDER],colors:{...CAT_COLORS},bgs:{...CAT_BG}}));}catch(e){}}
-
-function loadMeta(){
-  try{const o=localStorage.getItem('kdr-owners');if(o)JSON.parse(o).forEach(x=>{if(!owners.includes(x))owners.push(x);});}catch(e){}
-  try{
-    const c=localStorage.getItem('kdr-cats');
-    if(c){const p=JSON.parse(c);p.order.forEach(x=>{if(!CAT_ORDER.includes(x)){CAT_ORDER.push(x);CAT_COLORS[x]=p.colors[x]||'888888';CAT_BG[x]=p.bgs[x]||'F5F5F5';}});}
-  }catch(e){}
-  populateSelects();
-}
-
-const DEFAULT=[
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #1 (cryptic)",owner:"Yasir",dates:["2026-07-10"]},
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #2 (cryptic)",owner:"Yasir",dates:["2026-07-17"]},
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #3 (cryptic)",owner:"Yasir",dates:["2026-07-24"]},
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #4 (cryptic)",owner:"Yasir",dates:["2026-07-31"]},
-  {cat:"Pre-Launch Content",task:"Weekly build-up post #5 (cryptic)",owner:"Yasir",dates:["2026-08-07"]},
-  {cat:"Pre-Launch Content",task:"Launch video — final edit delivered",owner:"Videography",dates:["2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04"]},
-  {cat:"Pre-Launch Content",task:"Hero visual adaptations finalized",owner:"Design Team",dates:["2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20"]},
-  {cat:"Teaser Phase",task:"Teaser post #1 — Helmet",owner:"Design Team",dates:["2026-08-08"]},
-  {cat:"Teaser Phase",task:"Teaser post #2 — Circuit",owner:"Design Team",dates:["2026-08-09"]},
-  {cat:"Teaser Phase",task:"Teaser post #3 — Tomorrow.",owner:"Design Team",dates:["2026-08-11"]},
-  {cat:"Launch",task:"Game goes LIVE",owner:"Digital Solutions",dates:["2026-08-12"]},
-  {cat:"Launch",task:"Launch video posted — KDR channels",owner:"Design Team",dates:["2026-08-12"]},
-  {cat:"Launch",task:"KDR launch post (hero visual + caption)",owner:"Design Team",dates:["2026-08-12"]},
-  {cat:"Brand Collaborations",task:"Deepal (Platinum) — collab post live",owner:"Corporate Comms",dates:["2026-08-12"]},
-  {cat:"Brand Collaborations",task:"Jetour (Gold) — collab post live",owner:"Corporate Comms",dates:["2026-08-12"]},
-  {cat:"Brand Collaborations",task:"iCAUR (Silver) — collab post live",owner:"Corporate Comms",dates:["2026-08-12"]},
-  {cat:"Brand Collaborations",task:"Toyota — raffle collab post",owner:"Corporate Comms",dates:["2026-08-12"]},
-  {cat:"Brand Collaborations",task:"Lexus — raffle collab post",owner:"Corporate Comms",dates:["2026-08-12"]},
-  {cat:"Influencers",task:"Tekkenmaster — reel + story live",owner:"Corporate Comms",dates:["2026-08-12"]},
-  {cat:"Influencers",task:"5osh Fkra — reel + story live",owner:"Corporate Comms",dates:["2026-08-12"]},
-  {cat:"Influencers",task:"Charlie / Gulf Insider — reel + story live",owner:"Corporate Comms",dates:["2026-08-12"]},
-  {cat:"Influencers",task:"GCC Influencer #1 (Qatar) — reel live",owner:"Corporate Comms",dates:["2026-08-14"]},
-  {cat:"Influencers",task:"GCC Influencer #2 (Kuwait) — reel live",owner:"Corporate Comms",dates:["2026-08-16"]},
-  {cat:"Influencers",task:"Influencer follow-up story (leaderboard)",owner:"Corporate Comms",dates:["2026-08-26"]},
-  {cat:"Bahrain Sports City",task:"BSC Event — KDR booth activation",owner:"Design Team",dates:["2026-08-14","2026-08-15","2026-08-16","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21"]},
-  {cat:"Bahrain Sports City",task:"BSC social coverage posts",owner:"Design Team",dates:["2026-08-14","2026-08-17","2026-08-19","2026-08-21"]},
-  {cat:"Competition & Leaderboard",task:"Leaderboard competition open",owner:"Digital Solutions",dates:["2026-08-12","2026-08-13","2026-08-14","2026-08-15","2026-08-16","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-22","2026-08-23","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12"]},
-  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 1",owner:"Design Team",dates:["2026-08-19"]},
-  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 2",owner:"Design Team",dates:["2026-08-26"]},
-  {cat:"Competition & Leaderboard",task:"Leaderboard update post — Week 3",owner:"Design Team",dates:["2026-09-02"]},
-  {cat:"Competition & Leaderboard",task:"Last chance urgency posts",owner:"Design Team",dates:["2026-09-07","2026-09-09","2026-09-12"]},
-  {cat:"Competition & Leaderboard",task:"Leaderboard closes",owner:"Digital Solutions",dates:["2026-09-12"]},
-  {cat:"Competition & Leaderboard",task:"Winners announced — post",owner:"Design Team",dates:["2026-09-14"]},
-  {cat:"UGC",task:"UGC bonus draw open",owner:"Design Team",dates:["2026-08-12"]},
-  {cat:"UGC",task:"UGC reshares — ongoing",owner:"KDR Channel",dates:["2026-08-13","2026-08-20","2026-08-27","2026-09-03","2026-09-10"]},
-  {cat:"UGC",task:"UGC bonus draw winner announced",owner:"Design Team",dates:["2026-09-14"]},
-  {cat:"Email / CRM",task:"Email 1 — Welcome (auto on sign-up)",owner:"CRM",dates:["2026-08-12"]},
-  {cat:"Email / CRM",task:"Email 2 — Midway leaderboard update",owner:"CRM",dates:["2026-08-26"]},
-  {cat:"Email / CRM",task:"Email 3 — Last chance",owner:"CRM",dates:["2026-09-07"]},
-  {cat:"Email / CRM",task:"Email 4 — Winners + consolation offer",owner:"CRM",dates:["2026-09-15"]},
-  {cat:"Post-Campaign",task:"Campaign performance report",owner:"Design Team",dates:["2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25"]},
-  {cat:"Post-Campaign",task:"CRM database handoff to rental team",owner:"CRM",dates:["2026-09-16","2026-09-17","2026-09-18","2026-09-21"]},
-];
-
-const STORAGE_KEY='kdr-gantt-tasks-v4';
-let tasks=JSON.parse(JSON.stringify(DEFAULT));
-let filterMode='all';
-let editIdx=-1;
-let newDates=[];
-let editDates=[];
-
-const _td=new Date();const TODAY=`${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
-const START=new Date('2026-07-06T00:00:00');
-const END=new Date('2026-09-30T00:00:00');
-const LAUNCH='2026-08-12';
-
-function allDates(){let d=[],c=new Date(START);while(c<=END){d.push(new Date(c));c.setDate(c.getDate()+1);}return d;}
-function fmt(d){if(!(d instanceof Date))return d;const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
-
-function getActiveDates(){
-  const s=new Set();
-  tasks.forEach(t=>(t.dates||[]).forEach(d=>s.add(d)));
-  return s;
-}
-function getUpcomingDates(){
-  const s=new Set(),tod=TODAY;
-  tasks.forEach(t=>(t.dates||[]).filter(d=>d>=tod).forEach(d=>s.add(d)));
-  return s;
-}
-
-function save(){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));setStatus('Saved at '+new Date().toLocaleTimeString());}
-  catch(e){setStatus('Could not save.');}
-}
-function setStatus(m){document.getElementById('status').textContent=m;}
-function setFilter(mode,btn){filterMode=mode;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
-
-// ── Shared calendar popup ─────────────────────────────────
-const calState={year:2026,month:6};
-let activeCalNs='inp';
-const DOWS=['Su','Mo','Tu','We','Th','Fr','Sa'];
-
-function fmtCal(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
-
-function openCal(ns){
-  activeCalNs=ns;
-  calState.year=2026;calState.month=6;
-  const dates=ns==='inp'?newDates:editDates;
-  if(dates.length){calState.year=parseInt(dates[0].split('-')[0]);calState.month=parseInt(dates[0].split('-')[1])-1;}
-  document.getElementById('cal-popup-title').textContent=ns==='inp'?'Select dates':'Edit dates';
-  document.getElementById('cal-popup-overlay').classList.add('open');
-  renderCal();
-}
-
-function closeCal(){
-  document.getElementById('cal-popup-overlay').classList.remove('open');
-  renderCalTags(activeCalNs);
-}
-
-function handleCalOverlayClick(e){if(e.target===document.getElementById('cal-popup-overlay'))closeCal();}
-
-function clearCalDates(){
-  if(activeCalNs==='inp')newDates.length=0;else editDates.length=0;
-  renderCal();
-}
-
-function calNav(ns,dir){
-  calState.month+=dir;
-  if(calState.month>11){calState.month=0;calState.year++;}
-  if(calState.month<0){calState.month=11;calState.year--;}
-  renderCal();
-}
-
-function renderCal(){
-  const ns=activeCalNs;
-  const {year,month}=calState;
-  const dates=ns==='inp'?newDates:editDates;
-  const label=new Date(year,month,1).toLocaleString('default',{month:'long',year:'numeric'});
-  document.getElementById('_active-cal-label').textContent=label;
-  const firstDay=new Date(year,month,1).getDay();
-  const daysInMonth=new Date(year,month+1,0).getDate();
-  let html=DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join('');
-  for(let i=0;i<firstDay;i++)html+=`<div class="cal-day empty"></div>`;
-  for(let d=1;d<=daysInMonth;d++){
-    const fd=fmtCal(year,month,d);
-    const sel=dates.includes(fd);
-    const tod=fd===TODAY;
-    const dow=new Date(year,month,d).getDay();
-    const wk=dow===5||dow===6;
-    html+=`<div class="cal-day${sel?' selected':''}${tod&&!sel?' today':''}${wk&&!sel?' weekend':''}" onclick="toggleCalDate('${fd}')">${d}</div>`;
-  }
-  document.getElementById('_active-cal-grid').innerHTML=html;
-  const tagEl=document.getElementById('_active-dates-tags');
-  tagEl.innerHTML=dates.sort().map(d=>`<div class="date-tag">${d}<span onclick="toggleCalDate('${d}')">✕</span></div>`).join('');
-  const countEl=document.getElementById(`${ns}-dates-count`);
-  if(countEl)countEl.textContent=dates.length?`(${dates.length} selected)`:'';
-}
-
-function toggleCalDate(fd){
-  const arr=activeCalNs==='inp'?newDates:editDates;
-  const i=arr.indexOf(fd);
-  if(i>=0)arr.splice(i,1);else arr.push(fd);
-  renderCal();
-}
-
-function renderCalTags(ns){
-  const arr=ns==='inp'?newDates:editDates;
-  const el=document.getElementById(`${ns}-dates-tags`);
-  const countEl=document.getElementById(`${ns}-dates-count`);
-  if(countEl)countEl.textContent=arr.length?`(${arr.length} selected)`:'';
-  if(el)el.innerHTML=arr.sort().map(d=>`<div class="date-tag">${d}<span onclick="removeDateTag('${ns}','${d}')">✕</span></div>`).join('');
-}
-
-function removeDateTag(ns,fd){
-  const arr=ns==='inp'?newDates:editDates;
-  const i=arr.indexOf(fd);if(i>=0)arr.splice(i,1);
-  renderCalTags(ns);
-}
-
-function initCals(){newDates=[];editDates=[];}
-
-function render(){
-  const allD=allDates();
-  const activeSet=filterMode==='active'?getActiveDates():filterMode==='upcoming'?getUpcomingDates():null;
-  const dates=activeSet?allD.filter(d=>activeSet.has(fmt(d))):allD;
-  const months={};
-  dates.forEach(d=>{const k=d.getFullYear()+'-'+d.getMonth();if(!months[k]){months[k]={label:d.toLocaleString('default',{month:'long',year:'numeric'}),count:0};}months[k].count++;});
-
-  let html='<table><thead><tr><th class="h-act" rowspan="2">Activity</th><th class="h-own" rowspan="2">Owner</th>';
-  Object.values(months).forEach(m=>{html+=`<th class="h-month" colspan="${m.count}">${m.label}</th>`;});
-  html+='<th class="h-del" rowspan="2"></th></tr><tr>';
-  dates.forEach(d=>{
-    const wk=d.getDay()===5||d.getDay()===6,tod=fmt(d)===TODAY,launch=fmt(d)===LAUNCH;
-    html+=`<th class="h-day${wk?' weekend':''}${tod?' today-h':''}${launch?' launch-h':''}">${d.getDate()}</th>`;
-  });
-  html+='</tr></thead><tbody>';
-
-  CAT_ORDER.forEach(cat=>{
-    const ct=tasks.filter(t=>t.cat===cat);
-    if(!ct.length)return;
-    const col=CAT_COLORS[cat],bg=CAT_BG[cat];
-    html+=`<tr class="cat-row" data-cat="${cat}"><td colspan="${dates.length+3}" style="background:#${bg};color:#${col};border-left:4px solid #${col}">${cat}</td></tr>`;
-    ct.forEach((t,ti)=>{
-      const idx=tasks.indexOf(t);
-      const taskDates=new Set(t.dates||[]);
-      const even=ti%2===0;
-      const rb=even?'#fff':'#fcfcfe';
-      html+=`<tr class="task-row" draggable="true" data-idx="${idx}" data-cat="${cat}">
-        <td class="t-act" style="background:${rb}">
-          <span class="drag-handle" title="Drag to reorder">⠿</span><span onclick="openEdit(${idx})" style="cursor:pointer" title="Click to edit">${t.task}</span>
-        </td>
-        <td class="t-own" style="background:${rb}">${t.owner||''}</td>`;
-      dates.forEach(d=>{
-        const wk=d.getDay()===5||d.getDay()===6,fd=fmt(d),inR=taskDates.has(fd),tod=fd===TODAY,launch=fd===LAUNCH;
-        let cell='';
-        if(inR){cell=`<span class="dot" style="background:#${col};opacity:.9"></span>`;}
-        html+=`<td class="t-day${wk&&!inR?' weekend':''}${tod?' today-d':''}${launch?' launch-d':''}" style="${wk&&!inR?'background:#fafafa':''}">${cell}</td>`;
-      });
-      html+=`<td class="t-del"><button class="btn-del" onclick="delTask(${idx})">✕</button></td></tr>`;
-    });
-  });
-  html+='</tbody></table>';
-  document.getElementById('gantt-wrap').innerHTML=html;
-  let leg='';
-  CAT_ORDER.forEach(c=>{if(tasks.some(t=>t.cat===c))leg+=`<div class="leg-item"><div class="leg-dot" style="background:#${CAT_COLORS[c]}"></div>${c}</div>`;});
-  document.getElementById('legend').innerHTML=leg;
-  initDrag();
-}
-
-let dragSrcIdx=null;
-function initDrag(){
-  document.querySelectorAll('.task-row[draggable]').forEach(row=>{
-    row.addEventListener('dragstart',e=>{
-      dragSrcIdx=parseInt(row.dataset.idx);
-      row.classList.add('dragging');
-      e.dataTransfer.effectAllowed='move';
-    });
-    row.addEventListener('dragend',()=>{
-      document.querySelectorAll('.task-row').forEach(r=>r.classList.remove('dragging','drag-over'));
-    });
-    row.addEventListener('dragover',e=>{
-      e.preventDefault();
-      if(parseInt(row.dataset.idx)===dragSrcIdx)return;
-      document.querySelectorAll('.task-row').forEach(r=>r.classList.remove('drag-over'));
-      row.classList.add('drag-over');
-    });
-    row.addEventListener('drop',e=>{
-      e.preventDefault();
-      const targetIdx=parseInt(row.dataset.idx);
-      if(dragSrcIdx===null||dragSrcIdx===targetIdx)return;
-      const srcCat=tasks[dragSrcIdx].cat,tgtCat=tasks[targetIdx].cat;
-      if(srcCat!==tgtCat)return;
-      const item=tasks.splice(dragSrcIdx,1)[0];
-      const newTarget=tasks.indexOf(tasks.find((_,i)=>i===(targetIdx>dragSrcIdx?targetIdx-1:targetIdx)));
-      tasks.splice(targetIdx>dragSrcIdx?targetIdx-1:targetIdx,0,item);
-      dragSrcIdx=null;
-      save();render();
-    });
-  });
-}
-
-function addTask(){
-  const task=document.getElementById('inp-task').value.trim();
-  const owner=document.getElementById('inp-owner').value;
-  const cat=document.getElementById('inp-cat').value;
-  if(!task){alert('Fill in Activity name.');return;}
-  if(!newDates.length){alert('Select at least one date on the calendar.');return;}
-  tasks.push({cat,task,owner,dates:[...newDates]});
-  document.getElementById('inp-task').value='';
-  document.getElementById('inp-owner').value='';
-  newDates=[];
-  renderCalTags('inp');
-  save();render();
-}
-function delTask(idx){if(!confirm('Delete "'+tasks[idx].task+'"?'))return;tasks.splice(idx,1);save();render();}
-function openEdit(idx){
-  editIdx=idx;const t=tasks[idx];
-  document.getElementById('ed-task').value=t.task;
-  populateSelects();
-  document.getElementById('ed-owner').value=t.owner||'';
-  document.getElementById('ed-cat').value=t.cat;
-  editDates=[...(t.dates||[])];
-  renderCalTags('ed');
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal(){document.getElementById('modal').classList.remove('open');editIdx=-1;editDates=[];}
-function saveEdit(){
-  if(!editDates.length){alert('Select at least one date.');return;}
-  tasks[editIdx]={task:document.getElementById('ed-task').value.trim(),owner:document.getElementById('ed-owner').value,cat:document.getElementById('ed-cat').value,dates:[...editDates]};
-  closeModal();save();render();
-}
-function resetToDefault(){if(!confirm('Reset all tasks to default?'))return;tasks=JSON.parse(JSON.stringify(DEFAULT));save();render();}
-document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-document.getElementById('gantt-wrap').addEventListener('mouseover',function(e){
-  const td=e.target.closest('td.t-day');
-  if(!td)return;
-  const row=td.parentNode;
-  const colIdx=Array.from(row.cells).indexOf(td);
-  const table=td.closest('table');
-  clearHover(table);
-  table.querySelectorAll('tr').forEach(r=>{
-    const cell=r.cells[colIdx];
-    if(cell)cell.classList.add('dot-hover');
-  });
-  const headerCells=table.querySelectorAll('thead tr:last-child th');
-  if(headerCells[colIdx-2])headerCells[colIdx-2].classList.add('col-hover');
+// Init tab pill position after fonts load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const btn = document.querySelector('.tab-btn.active');
+    if (btn && window.updateTabPill) window.updateTabPill(btn);
+    else {
+      const bar = document.querySelector('.tab-bar'), pill = document.getElementById('tabPill');
+      if (bar && pill && btn) {
+        const rect = btn.getBoundingClientRect(), barRect = bar.getBoundingClientRect();
+        pill.style.left = (rect.left - barRect.left + 4) + 'px';
+        pill.style.width = (rect.width - 8) + 'px';
+      }
+    }
+  }, 100);
 });
-document.getElementById('gantt-wrap').addEventListener('mouseout',function(e){
-  const td=e.target.closest('td.t-day');
-  if(!td)return;
-  const related=e.relatedTarget?e.relatedTarget.closest('td.t-day'):null;
-  if(!related)clearHover(td.closest('table'));
-});
-function clearHover(table){
-  table.querySelectorAll('.dot-hover').forEach(el=>el.classList.remove('dot-hover'));
-  table.querySelectorAll('.col-hover').forEach(el=>el.classList.remove('col-hover'));
-}
-function load(){
-  try{const d=localStorage.getItem(STORAGE_KEY);if(d)tasks=JSON.parse(d);}catch(e){}
-  loadMeta();
-  initCals();
-  render();
-}
-load();
 </script>
 </body>
 </html>
